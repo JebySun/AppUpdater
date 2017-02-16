@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/drawable_dialog_bg">
+
+    <TextView android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:textColor="@color/black"/>
+
+    <TextView android:id="@+id/tv_msg"
+        android:layout_below="@id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:gravity="left"
+        android:textSize="14sp"
+        android:textColor="@color/gray"/>
+
+    <ProgressBar
+        android:id="@+id/progress_download"
+        android:layout_below="@id/tv_msg"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:progressDrawable="@drawable/drawable_progress"
+        android:max="100" />
+
+
+    <TextView android:id="@+id/tv_progress_msg"
+        android:layout_below="@id/progress_download"
+        android:layout_alignParentLeft="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:textColor="@color/gray"
+        android:textSize="12sp"
+        android:text="0.00M / 0.00M"/>
+
+    <TextView android:id="@+id/tv_progress_percent"
+        android:layout_below="@id/progress_download"
+        android:layout_alignParentRight="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="12dp"
+        android:textColor="@color/gray"
+        android:textSize="12sp"
+        android:text="0%"/>
+
+
+    <LinearLayout
+        android:layout_below="@id/progress_download"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal">
+        <Button android:id="@+id/btn_ok"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:text="确定"/>
+        <Button android:id="@+id/btn_cancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:text="取消"/>
+    </LinearLayout>
+
+
+</RelativeLayout>

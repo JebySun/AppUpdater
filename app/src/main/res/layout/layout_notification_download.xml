@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+	android:gravity="center_vertical"
+    android:orientation="horizontal" >
+
+    <!-- 通知图标 -->
+    <ImageView android:id="@+id/notify_icon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+		android:scaleType="fitCenter"/>
+
+    <RelativeLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+		android:gravity="center_vertical"
+	    android:paddingLeft="12dp">
+
+	    <!-- 通知标题 -->
+        <TextView android:id="@+id/notify_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="left|center_vertical"
+			android:textSize="14dp"
+			android:textColor="@color/black"/>
+
+		<ProgressBar android:id="@+id/notify_progress"
+			android:layout_below="@id/notify_title"
+		    android:layout_width="match_parent" 
+		    android:layout_height="4dp"
+		    style="?android:attr/progressBarStyleHorizontal"
+			android:progressDrawable="@drawable/drawable_progress"
+			android:max="100" />
+
+		<TextView android:id="@+id/notify_progress_size"
+			android:layout_below="@id/notify_progress"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:textSize="12sp"
+			android:textColor="@color/gray"/>
+		<TextView android:id="@+id/notify_progress_percent"
+			android:layout_below="@id/notify_progress"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
+			android:textSize="12sp"
+			android:textColor="@color/gray"/>
+    </RelativeLayout>
+
+</LinearLayout>
