@@ -91,6 +91,19 @@ public final class AndroidUtil {
     }
 
 
+    public static Drawable getApplicationIcon(Context context) {
+        PackageManager packageManager = null;
+        ApplicationInfo applicationInfo = null;
+        try {
+            packageManager = context.getApplicationContext().getPackageManager();
+            applicationInfo = packageManager.getApplicationInfo(context.getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            applicationInfo = null;
+        }
+        return packageManager.getApplicationIcon(applicationInfo);
+    }
+
+
 
 
 

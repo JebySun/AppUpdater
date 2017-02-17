@@ -1,4 +1,4 @@
-package com.jebysun.appupdater;
+package com.jebysun.updater.demo;
 
 import org.junit.Test;
 

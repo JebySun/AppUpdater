@@ -1,4 +1,4 @@
-package com.jebysun.appupdater;
+package com.jebysun.updater.demo;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -28,7 +28,7 @@ public class MainActivity extends Activity {
                 // 设置通知栏图标
                 .setIconResId(R.mipmap.ic_launcher)
                 // 设置检查新版本URL，得到json格式数据
-                .setHostUpdateCheckUrl("http://files.cnblogs.com/files/jebysun/app_version_default.js")
+                .setHostUpdateCheckUrl("http://files.cnblogs.com/files/jebysun/app_version.js")
                 // 设置下载路径
                 .setDownloadFilePath(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "Download")
                 // 设置下载文件名
@@ -58,7 +58,7 @@ public class MainActivity extends Activity {
                 // 手动强制检查更新
                 .setForceMode(true)
                 .setIconResId(R.mipmap.ic_launcher)
-                .setHostUpdateCheckUrl("http://files.cnblogs.com/files/jebysun/app_version_default.js")
+                .setHostUpdateCheckUrl("http://files.cnblogs.com/files/jebysun/app_version.js")
                 .setDownloadFilePath(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "Download")
                 .setDownloadFileName("WACA_update")
                 // 检查结果回调

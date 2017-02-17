@@ -13,7 +13,7 @@ import android.widget.RemoteViews;
 
 import com.jebysun.updater.listener.OnUpdateCheckResultListener;
 import com.jebysun.updater.listener.UpdateListener;
-import com.jebysun.updater.model.AppUpdateInfo;
+import com.jebysun.updater.model.UpdateModel;
 import com.jebysun.updater.service.UpdateService;
 import com.jebysun.updater.utils.AndroidUtil;
 import com.jebysun.updater.utils.JavaUtil;
@@ -106,19 +106,19 @@ public class AppUpdater {
 	                }
 
 					@Override
-					public void onFoundNewVersion(AppUpdateInfo appInfo) {
+					public void onFoundNewVersion(UpdateModel appInfo) {
 						if (updateCheckListener != null) {
 							updateCheckListener.onSuccess(true);
 						}
 						setDownloadFileName(getDownloadFileName() + "_v" + appInfo.getVersionName()+ ".apk");
 
 						final String downloadUrl = appInfo.getApkUrl();
-						StringBuilder updateMsgBuldr = new StringBuilder();
-						List<String> updateMsgList =appInfo.getUpdateMsgList();
-						for (int i=0; i<updateMsgList.size(); i++) {
-							updateMsgBuldr.append(i+1).append(".").append(updateMsgList.get(i)).append("\n");
+						StringBuilder releaseNoteBuldr = new StringBuilder();
+						List<String> releaseNoteList =appInfo.getReleaseNoteList();
+						for (int i=0; i<releaseNoteList.size(); i++) {
+							releaseNoteBuldr.append(releaseNoteList.get(i)).append("\n");
 						}
-						String updateMsg = (String) updateMsgBuldr.subSequence(0, updateMsgBuldr.length()-1);
+						String updateMsg = (String) releaseNoteBuldr.subSequence(0, releaseNoteBuldr.length()-1);
 
 						updateDialog = new CheckedDialogFragment();
 						updateDialog.setTitle("检测到新版本");
@@ -290,7 +290,6 @@ public class AppUpdater {
 	 * 后台下载
 	 */
 	private void downloadInNotification() {
-		//TODO 应用名称
 		String appName = AndroidUtil.getApplicationName(context);
 
 		notifyBuilder = new NotificationCompat.Builder(context);

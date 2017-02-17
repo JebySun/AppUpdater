@@ -8,7 +8,7 @@ import android.os.IBinder;
 import android.util.Xml;
 
 import com.jebysun.updater.listener.UpdateListener;
-import com.jebysun.updater.model.AppUpdateInfo;
+import com.jebysun.updater.model.UpdateModel;
 import com.jebysun.updater.task.CheckUpdateAsyncTask;
 import com.jebysun.updater.task.DownloadAsyncTask;
 import com.jebysun.updater.utils.AndroidUtil;
@@ -71,7 +71,7 @@ public class UpdateService extends Service {
     
     public void checkUpdateResult(String hostVersionInfo) {
 		if (hostVersionInfo != null && hostVersionInfo.length() != 0 && !hostVersionInfo.equals("timeout")) {
-			AppUpdateInfo appUpdateInfo = parseJson(hostVersionInfo);
+			UpdateModel appUpdateInfo = parseJson(hostVersionInfo);
 			if (AndroidUtil.getAppVersionCode(this) < appUpdateInfo.getVersionCode()) {
 				this.updateListener.onFoundNewVersion(appUpdateInfo);
 			} else {
@@ -141,8 +141,8 @@ public class UpdateService extends Service {
     }
 
 
-	public AppUpdateInfo parseJson(String jsonStr) {
-		AppUpdateInfo appInfo = new AppUpdateInfo();
+	public UpdateModel parseJson(String jsonStr) {
+		UpdateModel appInfo = new UpdateModel();
 		try {
 			JSONObject jsonObj = new JSONObject(jsonStr);
 			appInfo.setVersionCode(jsonObj.getInt("versionCode"));
@@ -150,13 +150,13 @@ public class UpdateService extends Service {
 			appInfo.setFileSize(jsonObj.getString("fileSize"));
 			appInfo.setApkUrl(jsonObj.getString("apkUrl"));
 			appInfo.setRequired(jsonObj.getBoolean("required"));
-			appInfo.setPublishDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(jsonObj.getString("publishDate")));
-			List<String> updateMsgList = new ArrayList<>();
-			JSONArray jsonArr = jsonObj.getJSONArray("updateMsgList");
+			appInfo.setReleaseDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(jsonObj.getString("releaseDate")));
+			List<String> relaseNoteList = new ArrayList<>();
+			JSONArray jsonArr = jsonObj.getJSONArray("releaseNotes");
 			for (int i=0; i<jsonArr.length(); i++) {
-				updateMsgList.add(jsonArr.getString(i));
+				relaseNoteList.add(jsonArr.getString(i));
 			}
-			appInfo.setUpdateMsgList(updateMsgList);
+			appInfo.setReleaseNoteList(relaseNoteList);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		} catch (ParseException e) {

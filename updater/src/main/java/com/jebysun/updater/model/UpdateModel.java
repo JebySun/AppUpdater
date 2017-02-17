@@ -9,15 +9,15 @@ import java.util.List;
  * Created by Administrator on 2017/1/20.
  */
 
-public class AppUpdateInfo implements Serializable {
+public class UpdateModel implements Serializable {
 
     private int versionCode;
     private String versionName;
     private String fileSize;
     private boolean required;
     private String apkUrl;
-    private Date publishDate;
-    private List<String> updateMsgList = new ArrayList<>();
+    private Date releaseDate;
+    private List<String> releaseNoteList = new ArrayList<>();
 
 
     public int getVersionCode() {
@@ -60,19 +60,19 @@ public class AppUpdateInfo implements Serializable {
         this.apkUrl = apkUrl;
     }
 
-    public Date getPublishDate() {
-        return publishDate;
+    public Date getReleaseDate() {
+        return releaseDate;
     }
 
-    public void setPublishDate(Date publishDate) {
-        this.publishDate = publishDate;
+    public void setReleaseDate(Date releaseDate) {
+        this.releaseDate = releaseDate;
     }
 
-    public List<String> getUpdateMsgList() {
-        return updateMsgList;
+    public List<String> getReleaseNoteList() {
+        return releaseNoteList;
     }
 
-    public void setUpdateMsgList(List<String> updateMsgList) {
-        this.updateMsgList = updateMsgList;
+    public void setReleaseNoteList(List<String> releaseNoteList) {
+        this.releaseNoteList = releaseNoteList;
     }
 }

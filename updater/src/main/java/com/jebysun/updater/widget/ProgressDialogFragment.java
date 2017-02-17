@@ -71,6 +71,7 @@ public class ProgressDialogFragment extends DialogFragment implements View.OnCli
         super.onPause();
     }
 
+
     //TODO 下载过程中取消下载
     @Override
     public void onCancel(DialogInterface dialog) {

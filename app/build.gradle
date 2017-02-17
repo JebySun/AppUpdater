@@ -4,7 +4,7 @@ android {
     compileSdkVersion 24
     buildToolsVersion "24.0.2"
     defaultConfig {
-        applicationId "com.jebysun.appupdater"
+        applicationId "com.jebysun.updater.demo"
         minSdkVersion 14
         targetSdkVersion 22
         versionCode 1

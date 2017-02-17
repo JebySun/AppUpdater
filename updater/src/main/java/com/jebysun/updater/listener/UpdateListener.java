@@ -1,6 +1,6 @@
 package com.jebysun.updater.listener;
 
-import com.jebysun.updater.model.AppUpdateInfo;
+import com.jebysun.updater.model.UpdateModel;
 
 /**
  * 更新监听接口
@@ -8,7 +8,7 @@ import com.jebysun.updater.model.AppUpdateInfo;
  *
  */
 public interface UpdateListener {
-	void onFoundNewVersion(AppUpdateInfo updateInfo);
+	void onFoundNewVersion(UpdateModel updateInfo);
 	void onNoFoundNewVersion();
 	void onCheckError(String errorMsg);
 
