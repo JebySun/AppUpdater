@@ -62,7 +62,7 @@ public class MainActivity extends Activity {
                 .setDownloadFilePath(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "Download")
                 .setDownloadFileName("WACA_update")
                 // 检查结果回调
-                .setOnUpdateCheckListener(new OnUpdateCheckResultListener() {
+                .setOnUpdateCheckResultListener(new OnUpdateCheckResultListener() {
                     @Override
                     public void onSuccess(boolean hasNew) {
                         // 关闭提示

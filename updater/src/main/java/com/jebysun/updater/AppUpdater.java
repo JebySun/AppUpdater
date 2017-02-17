@@ -346,7 +346,7 @@ public class AppUpdater {
 	}
 
 
-	public AppUpdater setOnUpdateCheckListener(OnUpdateCheckResultListener listener) {
+	public AppUpdater setOnUpdateCheckResultListener(OnUpdateCheckResultListener listener) {
 		this.updateCheckListener = listener;
 		return this;
 	}
