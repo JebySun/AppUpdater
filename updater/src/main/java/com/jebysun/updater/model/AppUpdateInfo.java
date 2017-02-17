@@ -1,4 +1,4 @@
-package com.jebysun.appupdater.model;
+package com.jebysun.updater.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;

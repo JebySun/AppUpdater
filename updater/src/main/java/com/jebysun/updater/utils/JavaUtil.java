@@ -1,4 +1,4 @@
-package com.jebysun.appupdater.utils;
+package com.jebysun.updater.utils;
 
 import java.security.MessageDigest;
 import java.util.Date;

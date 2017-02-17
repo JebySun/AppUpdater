@@ -1,4 +1,4 @@
-package com.jebysun.appupdater;
+package com.jebysun.updater;
 
 import android.app.Activity;
 import android.app.NotificationManager;
@@ -11,14 +11,14 @@ import android.support.v4.app.NotificationCompat;
 import android.view.Gravity;
 import android.widget.RemoteViews;
 
-import com.jebysun.appupdater.listener.OnUpdateCheckListener;
-import com.jebysun.appupdater.listener.UpdateListener;
-import com.jebysun.appupdater.model.AppUpdateInfo;
-import com.jebysun.appupdater.service.UpdateService;
-import com.jebysun.appupdater.utils.AndroidUtil;
-import com.jebysun.appupdater.utils.JavaUtil;
-import com.jebysun.appupdater.widget.CheckedDialogFragment;
-import com.jebysun.appupdater.widget.ProgressDialogFragment;
+import com.jebysun.updater.listener.OnUpdateCheckResultListener;
+import com.jebysun.updater.listener.UpdateListener;
+import com.jebysun.updater.model.AppUpdateInfo;
+import com.jebysun.updater.service.UpdateService;
+import com.jebysun.updater.utils.AndroidUtil;
+import com.jebysun.updater.utils.JavaUtil;
+import com.jebysun.updater.widget.CheckedDialogFragment;
+import com.jebysun.updater.widget.ProgressDialogFragment;
 
 import java.io.File;
 import java.util.List;
@@ -49,13 +49,15 @@ public class AppUpdater {
 	private RemoteViews customViews;
 	private CheckedDialogFragment updateDialog;
 
-	private OnUpdateCheckListener updateCheckListener;
+	private OnUpdateCheckResultListener updateCheckListener;
 
+	private int iconResId;
 	private boolean forceChecked;
 	private long fileSize;
 	private boolean downloadInBack;
 	private float fCount = 1f; //转换单位量
 	private String format;     //进度格式
+
 
 
 	private AppUpdater(Context context) {
@@ -104,7 +106,10 @@ public class AppUpdater {
 	                }
 
 					@Override
-					public void checkUpdate(AppUpdateInfo appInfo) {
+					public void onFoundNewVersion(AppUpdateInfo appInfo) {
+						if (updateCheckListener != null) {
+							updateCheckListener.onSuccess(true);
+						}
 						setDownloadFileName(getDownloadFileName() + "_v" + appInfo.getVersionName()+ ".apk");
 
 						final String downloadUrl = appInfo.getApkUrl();
@@ -140,7 +145,7 @@ public class AppUpdater {
 					}
 
 					@Override
-					public void onNotFound() {
+					public void onNoFoundNewVersion() {
 						if (forceChecked && updateCheckListener!=null) {
 							updateCheckListener.onSuccess(false);
 							forceChecked = false;
@@ -149,7 +154,7 @@ public class AppUpdater {
 					}
 
 					@Override
-					public void downloadFinish() {
+					public void onDownloadFinish() {
 						progressDialog.dismiss();
 						notifyMgr.cancel(DOWNLOAD_NOTIFY_ID);
 						//安装
@@ -158,11 +163,19 @@ public class AppUpdater {
 					}
 
 					@Override
-					public void downloadError() {
+					public void onDownloadError(String errorMsg) {
 						AndroidUtil.toast(context, "下载出错，请重试！");
 						release();
 					}
-	            });
+
+					@Override
+					public void onCheckError(String errorMsg) {
+						if (updateCheckListener != null) {
+							updateCheckListener.onError(errorMsg);
+						}
+						release();
+					}
+				});
 			}
 
 			@Override
@@ -278,17 +291,17 @@ public class AppUpdater {
 	 */
 	private void downloadInNotification() {
 		//TODO 应用名称
-		String appName = context.getString(R.string.app_name);
+		String appName = AndroidUtil.getApplicationName(context);
 
 		notifyBuilder = new NotificationCompat.Builder(context);
 		// TODO 系统自带下载动态图标
-		notifyBuilder.setSmallIcon(R.mipmap.ic_launcher);
+		notifyBuilder.setSmallIcon(iconResId);
 		notifyBuilder.setTicker("["+appName+"]" + "已转入后台下载");
 		notifyBuilder.setAutoCancel(true);
 		notifyBuilder.setOngoing(true);
 		notifyBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
 		customViews = new RemoteViews(context.getPackageName(), R.layout.layout_notification_download);
-		customViews.setImageViewResource(R.id.notify_icon, R.mipmap.ic_launcher);
+		customViews.setImageViewResource(R.id.notify_icon, iconResId);
 		customViews.setTextViewText(R.id.notify_title, "["+appName+"]" + "下载中");
 		//当前下载进度设置
 		//============start=================
@@ -304,6 +317,11 @@ public class AppUpdater {
 	}
 
 
+
+	public AppUpdater setIconResId(int resId) {
+		iconResId = resId;
+		return this;
+	}
 
 	public AppUpdater setHostUpdateCheckUrl(String hostUpdateCheckUrl) {
 		this.hostUpdateCheckUrl = hostUpdateCheckUrl;
@@ -329,8 +347,13 @@ public class AppUpdater {
 	}
 
 
-	public AppUpdater setOnUpdateCheckListener(OnUpdateCheckListener listener) {
+	public AppUpdater setOnUpdateCheckListener(OnUpdateCheckResultListener listener) {
 		this.updateCheckListener = listener;
+		return this;
+	}
+
+	public AppUpdater setForceMode(boolean isForceModel) {
+		forceChecked = isForceModel;
 		return this;
 	}
 

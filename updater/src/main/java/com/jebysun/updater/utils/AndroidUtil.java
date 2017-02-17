@@ -1,4 +1,4 @@
-package com.jebysun.appupdater.utils;
+package com.jebysun.updater.utils;
 
 import android.app.Activity;
 import android.content.Context;
@@ -74,6 +74,20 @@ public final class AndroidUtil {
             return context.getDrawable(drawableResId);
         }
         return context.getResources().getDrawable(drawableResId);
+    }
+
+
+    public static String getApplicationName(Context context) {
+        PackageManager packageManager = null;
+        ApplicationInfo applicationInfo = null;
+        try {
+            packageManager = context.getApplicationContext().getPackageManager();
+            applicationInfo = packageManager.getApplicationInfo(context.getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            applicationInfo = null;
+        }
+        String applicationName = (String) packageManager.getApplicationLabel(applicationInfo);
+        return applicationName;
     }
 
 

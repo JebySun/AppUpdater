@@ -1,4 +1,4 @@
-package com.jebysun.appupdater.service;
+package com.jebysun.updater.service;
 
 import android.app.Service;
 import android.content.Intent;
@@ -7,11 +7,11 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Xml;
 
-import com.jebysun.appupdater.listener.UpdateListener;
-import com.jebysun.appupdater.model.AppUpdateInfo;
-import com.jebysun.appupdater.task.CheckUpdateAsyncTask;
-import com.jebysun.appupdater.task.DownloadAsyncTask;
-import com.jebysun.appupdater.utils.AndroidUtil;
+import com.jebysun.updater.listener.UpdateListener;
+import com.jebysun.updater.model.AppUpdateInfo;
+import com.jebysun.updater.task.CheckUpdateAsyncTask;
+import com.jebysun.updater.task.DownloadAsyncTask;
+import com.jebysun.updater.utils.AndroidUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -73,10 +73,12 @@ public class UpdateService extends Service {
 		if (hostVersionInfo != null && hostVersionInfo.length() != 0 && !hostVersionInfo.equals("timeout")) {
 			AppUpdateInfo appUpdateInfo = parseJson(hostVersionInfo);
 			if (AndroidUtil.getAppVersionCode(this) < appUpdateInfo.getVersionCode()) {
-				this.updateListener.checkUpdate(appUpdateInfo);
+				this.updateListener.onFoundNewVersion(appUpdateInfo);
 			} else {
-				this.updateListener.onNotFound();
+				this.updateListener.onNoFoundNewVersion();
 			}
+		} else {
+			this.updateListener.onCheckError("check update error");
 		}
 
     }
@@ -87,9 +89,9 @@ public class UpdateService extends Service {
      */
     public void updateProgress(Integer... values) {
     	if(values[0]==-100) {
-    		updateListener.downloadFinish();
+    		updateListener.onDownloadFinish();
     	} else if (values[0]==-1) {
-    		updateListener.downloadError();
+    		updateListener.onDownloadError("download error");
         } else if (System.currentTimeMillis()-lastUpdateTime>100) {
     		updateListener.onDownloading(values);
     		lastUpdateTime = System.currentTimeMillis();
