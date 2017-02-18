@@ -6,6 +6,9 @@
 * 不依赖第三方库；
 * 界面美观；
 
+## 效果截图
+(暂未添加)
+
 ## 如何使用
   目前需要把项目下载到本地导入updater模块，并在你的项目主模块添加依赖updater模块。然后，在合适的位置（通常是Activity的onCreate方法内）加入以下一句代码即可：
 ```java
@@ -85,3 +88,19 @@ private void checkNewVersion() {
 
 ## 反馈联系
 * jebysun(a)126.com
+
+## License
+Copyright 2017 JebySun
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
