@@ -8,7 +8,14 @@
 * 界面美观；
 
 ## 效果截图
-![演示效果图](other_files/screenshots/screenshot_1.jpg)![演示效果图](other_files/screenshots/screenshot_2.jpg)![演示效果图](other_files/screenshots/screenshot_3.jpg)
+<!-- This text will not appear in the browser window. 
+![演示效果图](other_files/screenshots/screenshot_1.jpg)
+![演示效果图](other_files/screenshots/screenshot_2.jpg)
+![演示效果图](other_files/screenshots/screenshot_3.jpg)
+-->
+<img src="other_files/screenshots/screenshot_1.jpg" width="30%"/>
+<img src="other_files/screenshots/screenshot_2.jpg" width="30%"/>
+<img src="other_files/screenshots/screenshot_3.jpg" width="30%"/>
 
 ## 如何使用
 1.首先，添加jitpack支持，修改项目根目录下的build.gradle：
