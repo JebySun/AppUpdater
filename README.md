@@ -45,7 +45,7 @@ AppUpdater.with(this).setHostUpdateCheckUrl("http://files.cnblogs.com/files/jeby
 	"releaseNotes":["1.新版本特性新版本特性新版本特性。", "2.描述版本信息，方便用户选择是否便用户选择是否下载。", "3.性能优化和BUG修复。"]
 }
 ```
-做完以上工作之后，运行吧。
+做完以上工作之后，运行吧！  
 另外，如果需要手动检查更新，就这样写：
 ```java
 Button btnCheckUpdate = (Button) this.findViewById(R.id.btn_check_update);
