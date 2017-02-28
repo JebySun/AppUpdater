@@ -1,5 +1,5 @@
 # AppUpdater
-  由于各大应用市场相继拒绝上线集成友盟等第三方自动更新功能的应用，友盟已放弃维护和支持自动更新功能模块。但这个功能对很多App还是很重要的，考虑到这个功能的必要性和通用性，于是这个项目就这么诞生了。使用这个项目，你可以一句代码实现Android应用自身检查更新。
+  各大应用市场相继拒绝上线集成友盟等第三方自动更新功能的应用，友盟已放弃维护和支持自动更新模块。但这个功能对很多App还是很重要的，考虑到这个功能的必要性和通用性，于是这个项目就这么诞生了。使用这个项目，一句代码实现Android应用自身检查更新。
 
 ## 功能特点
 * 使用简单，只需一句代码即可；
@@ -13,9 +13,9 @@
 ![演示效果图](other_files/screenshots/screenshot_2.jpg)
 ![演示效果图](other_files/screenshots/screenshot_3.jpg)
 -->
-<img src="other_files/screenshots/screenshot_1.jpg" width="33%"/>
-<img src="other_files/screenshots/screenshot_2.jpg" width="33%"/>
-<img src="other_files/screenshots/screenshot_3.jpg" width="33%"/>
+<img src="other_files/screenshots/screenshot_1.jpg" alt="提示有新版本" title="提示有新版本" width="33%"/>
+<img src="other_files/screenshots/screenshot_2.jpg" alt="弹出框显示下载进度" title="弹出框显示下载进度" width="33%"/>
+<img src="other_files/screenshots/screenshot_3.jpg" alt="后台下载，通知栏显示进度。" title="后台下载，通知栏显示进度。" width="33%"/>
 
 ## 如何使用
 1.首先，添加jitpack支持，修改项目根目录下的build.gradle：
