@@ -13,9 +13,9 @@
 ![演示效果图](other_files/screenshots/screenshot_2.jpg)
 ![演示效果图](other_files/screenshots/screenshot_3.jpg)
 -->
-<img src="other_files/screenshots/screenshot_1.jpg" width="30%"/>
-<img src="other_files/screenshots/screenshot_2.jpg" width="30%"/>
-<img src="other_files/screenshots/screenshot_3.jpg" width="30%"/>
+<img src="other_files/screenshots/screenshot_1.jpg" width="33%"/>
+<img src="other_files/screenshots/screenshot_2.jpg" width="33%"/>
+<img src="other_files/screenshots/screenshot_3.jpg" width="34%"/>
 
 ## 如何使用
 1.首先，添加jitpack支持，修改项目根目录下的build.gradle：
