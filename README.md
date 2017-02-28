@@ -7,12 +7,10 @@
 * 界面美观；
 
 ## 效果截图
-![演示效果图](other_files/screenshots/screenshot_1.jpg)
-![演示效果图](other_files/screenshots/screenshot_2.jpg)
-![演示效果图](other_files/screenshots/screenshot_3.jpg)
+![演示效果图](other_files/screenshots/screenshot_1.jpg)![演示效果图](other_files/screenshots/screenshot_2.jpg)![演示效果图](other_files/screenshots/screenshot_3.jpg)
 
 ## 如何使用
-1.首先，添加jitpack支持，修改项目根目录下的build.gradle：
+1. 首先，添加jitpack支持，修改项目根目录下的build.gradle：
 ```gradle
 allprojects {
 		repositories {
@@ -21,19 +19,19 @@ allprojects {
 		}
 	}
 ```
-2.接着，添加gradle依赖，修改项目模块目录下的build.gradle：
+2. 接着，添加gradle依赖，修改项目模块目录下的build.gradle：
 ```gradle
 dependencies {
 	...
 	compile 'com.github.JebySun:AppUpdater:v1.0.0'
 }
 ```
-3.然后，在合适的位置（通常是Activity的onCreate方法内）加入以下一句代码即可：
+3. 然后，在合适的位置（通常是Activity的onCreate方法内）加入以下一句代码即可：
 ```java
 // 自动检查更新
 AppUpdater.with(this).setHostUpdateCheckUrl("http://files.cnblogs.com/files/jebysun/app_version.js").check();
 ```
-4.最后，在服务器放一个json规范格式的文件，该文件的url地址就是java代码中setHostUpdateCheckUrl方法的参数，文件内容如下：
+4. 最后，在服务器放一个json规范格式的文件，该文件的url地址就是java代码中setHostUpdateCheckUrl方法的参数，文件内容如下：
 ```javascript
 {
 	"versionCode":10,
@@ -46,6 +44,7 @@ AppUpdater.with(this).setHostUpdateCheckUrl("http://files.cnblogs.com/files/jeby
 }
 ```
 做完以上工作之后，运行吧！  
+
 另外，如果需要手动检查更新，就这样写：
 ```java
 Button btnCheckUpdate = (Button) this.findViewById(R.id.btn_check_update);
