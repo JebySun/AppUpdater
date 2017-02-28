@@ -46,55 +46,11 @@ public class DownloadAsyncTask extends AsyncTask<String, Integer, String> {
 		downloadUrl = params[0];
 		downloadPath = params[1];
 		downloadFileName = params[2];
-
-		return downloadFile(downloadUrl, new File(downloadPath, downloadFileName));
-
-		////////////////////////////////
-//        File filePath = new File(downloadPath);
-//        if (!filePath.exists()) {
-//        	filePath.mkdirs();
-//        }
-//        //创建本地文件对象
-//        File file = new File(filePath, downloadFileName);
-//        try {
-//        	file.createNewFile();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//        //创建HttpURL连接
-//        URL url = null;
-//		try {
-//			url = new URL(downloadUrl);
-//			HttpURLConnection conn;
-//			conn = (HttpURLConnection) url.openConnection();
-//			conn.setConnectTimeout(5000);
-//			conn.setRequestMethod("GET");
-//			if (conn.getResponseCode() == 200) {
-//				int length = conn.getContentLength();
-//				this.publishProgress(length, 0);
-//				InputStream is = conn.getInputStream();
-//				FileOutputStream fos = new FileOutputStream(file);
-//				byte[] buffer = new byte[4*1024];
-//				int len = 0;
-//				int count = 0;
-//				while((len = is.read(buffer)) != -1){
-//					if(this.isCancelled()) {
-//						break;
-//					}
-//					fos.write(buffer, 0, len);
-//					count = count + len;
-//					this.publishProgress(length, count);
-//				}
-//				is.close();
-//				fos.close();
-//			} else {
-//				return "error";
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			return "error";
-//		}
-//		return "finished";
+		File downloadPathFile = new File(downloadPath);
+		if (!downloadPathFile.exists()) {
+			downloadPathFile.mkdirs();
+		}
+		return downloadFile(downloadUrl, new File(downloadPathFile, downloadFileName));
 	}
 
 	/**

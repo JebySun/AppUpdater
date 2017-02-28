@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Environment;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.view.Gravity;
@@ -30,6 +31,7 @@ import java.util.Map;
  * TODO：
  * 1.当检查到有新版时，检查最新版apk文件是否已经下载，已下载则直接提示安装。
  * 2.检查当前网络环境，如果是WIFI才检查更新。
+ * 3.忽略新版本提示过后，一定时间内不再提示更新。
  * @author JebySun
  *
  */
@@ -38,7 +40,6 @@ public class AppUpdater {
 	public static final int DOWNLOAD_NOTIFY_ID = 1;
 
 	private String hostUpdateCheckUrl;
-	private String downloadFilePath;
 	private String downloadFileName;
 
 	private Context context;
@@ -51,19 +52,29 @@ public class AppUpdater {
 
 	private OnUpdateCheckResultListener updateCheckListener;
 
-	private int iconResId;
-	private boolean forceChecked;
+	private boolean forceCheckMode;
 	private long fileSize;
 	private boolean downloadInBack;
 	private float fCount = 1f; //转换单位量
-	private String format;     //进度格式
-
+	private String format;     //下载进度信息格式
+	private int iconResId;
+	private String appName;
+	private String downloadPath;
 
 
 	private AppUpdater(Context context) {
 		this.context = context;
+		this.iconResId = context.getApplicationInfo().icon;
+		this.appName = AndroidUtil.getApplicationName(context);
+		this.downloadPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
+		this.downloadFileName = appName;
 	}
 
+	/**
+	 * 需要应用上下文参数，注意：传入的Context必须是Acitivity的实例。
+	 * @param context
+	 * @return
+     */
 	public static AppUpdater with(Context context) {
 		if (!(context instanceof Activity)) {
 			throw new RuntimeException("ensure parameter \"context\" is instance of Activity");
@@ -71,6 +82,9 @@ public class AppUpdater {
 		return new AppUpdater(context);
 	}
 
+	/**
+	 * 开始检查
+	 */
 	public void check() {
 		if (serviceConn != null) {
 			context.unbindService(serviceConn);
@@ -110,7 +124,7 @@ public class AppUpdater {
 						if (updateCheckListener != null) {
 							updateCheckListener.onSuccess(true);
 						}
-						setDownloadFileName(getDownloadFileName() + "_v" + appInfo.getVersionName()+ ".apk");
+						downloadFileName = downloadFileName + "_v" + appInfo.getVersionName()+ ".apk";
 
 						final String downloadUrl = appInfo.getApkUrl();
 						StringBuilder releaseNoteBuldr = new StringBuilder();
@@ -146,9 +160,9 @@ public class AppUpdater {
 
 					@Override
 					public void onNoFoundNewVersion() {
-						if (forceChecked && updateCheckListener!=null) {
+						if (forceCheckMode && updateCheckListener!=null) {
 							updateCheckListener.onSuccess(false);
-							forceChecked = false;
+							forceCheckMode = false;
 						}
 						release();
 					}
@@ -158,7 +172,7 @@ public class AppUpdater {
 						progressDialog.dismiss();
 						notifyMgr.cancel(DOWNLOAD_NOTIFY_ID);
 						//安装
-						AndroidUtil.installApk(context, getDownloadFilePath() + File.separator + getDownloadFileName());
+						AndroidUtil.installApk(context, downloadPath + File.separator + getDownloadFileName());
 						release();
 					}
 
@@ -187,9 +201,7 @@ public class AppUpdater {
 		Intent updateIntent = new Intent(context, UpdateService.class);
 		updateIntent.putExtra("update_check_url", hostUpdateCheckUrl);
 		context.bindService(updateIntent, serviceConn, Context.BIND_AUTO_CREATE);
-
 	}
-
 
 
 
@@ -218,9 +230,8 @@ public class AppUpdater {
 		progressDialog.show(((Activity)context).getFragmentManager(), "ProgressDialogFragment");
 
 		//调用服务的文件下载方法
-		updateService.startDownLoadTask(downloadUrl, getDownloadFilePath(), getDownloadFileName());
+		updateService.startDownLoadTask(downloadUrl, downloadPath, downloadFileName);
 	}
-
 
 	/**
 	 * 释放
@@ -233,7 +244,6 @@ public class AppUpdater {
 		customViews = null;
 		context = null;
 	}
-
 
     private ProgressDialogFragment setProgressTxtFormat(ProgressDialogFragment pd) {
     	float size = fileSize;
@@ -290,10 +300,9 @@ public class AppUpdater {
 	 * 后台下载
 	 */
 	private void downloadInNotification() {
-		String appName = AndroidUtil.getApplicationName(context);
-
 		notifyBuilder = new NotificationCompat.Builder(context);
-		// TODO 系统自带下载动态图标
+		notifyBuilder.setSmallIcon(iconResId);
+		//使用系统自带下载动态图标
 		notifyBuilder.setSmallIcon(iconResId);
 		notifyBuilder.setTicker("["+appName+"]" + "已转入后台下载");
 		notifyBuilder.setAutoCancel(true);
@@ -316,23 +325,37 @@ public class AppUpdater {
 	}
 
 
-
-	public AppUpdater setIconResId(int resId) {
-		iconResId = resId;
-		return this;
-	}
-
+	/**
+	 * 设置检查更新信息服务地址，必须设置。
+	 * @param hostUpdateCheckUrl
+	 * @return
+     */
 	public AppUpdater setHostUpdateCheckUrl(String hostUpdateCheckUrl) {
 		this.hostUpdateCheckUrl = hostUpdateCheckUrl;
 		return this;
 	}
 
-	public String getDownloadFilePath() {
-		return downloadFilePath;
+	/**
+	 * 设置下载路径，可选设置项，默认下载到拓展存储卡根目录下的Download内。
+	 * @param downloadPath
+	 * @return
+     */
+	public AppUpdater setDownloadPath(String downloadPath) {
+		this.downloadPath = downloadPath;
+		return this;
 	}
 
-	public AppUpdater setDownloadFilePath(String downloadFilePath) {
-		this.downloadFilePath = downloadFilePath;
+	public String getDownloadPath() {
+		return downloadPath;
+	}
+
+	/**
+	 * 设置下载文件名称(不需要指定文件拓展名)，可选设置项，默认名称格式为：[应用名称]_v[应用版本名称].apk。
+	 * @param downloadFileName
+	 * @return
+     */
+	public AppUpdater setDownloadFileName(String downloadFileName) {
+		this.downloadFileName = downloadFileName;
 		return this;
 	}
 
@@ -340,19 +363,23 @@ public class AppUpdater {
 		return downloadFileName;
 	}
 
-	public AppUpdater setDownloadFileName(String downloadFileName) {
-		this.downloadFileName = downloadFileName;
-		return this;
-	}
-
-
+	/**
+	 * 设置检查更新结果事件通知，手动检查更新时可使用，以便应用给出检查结果提示。
+	 * @param listener
+	 * @return
+     */
 	public AppUpdater setOnUpdateCheckResultListener(OnUpdateCheckResultListener listener) {
 		this.updateCheckListener = listener;
 		return this;
 	}
 
+	/**
+	 * 强制检查一次更新，不管之前的忽略更新标识。
+	 * @param isForceModel
+	 * @return
+     */
 	public AppUpdater setForceMode(boolean isForceModel) {
-		forceChecked = isForceModel;
+		forceCheckMode = isForceModel;
 		return this;
 	}
 
