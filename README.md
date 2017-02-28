@@ -19,19 +19,19 @@ allprojects {
 		}
 	}
 ```
-2. 接着，添加gradle依赖，修改项目模块目录下的build.gradle：
+1. 接着，添加gradle依赖，修改项目模块目录下的build.gradle：
 ```gradle
 dependencies {
 	...
 	compile 'com.github.JebySun:AppUpdater:v1.0.0'
 }
 ```
-3. 然后，在合适的位置（通常是Activity的onCreate方法内）加入以下一句代码即可：
+1. 然后，在合适的位置（通常是Activity的onCreate方法内）加入以下一句代码即可：
 ```java
 // 自动检查更新
 AppUpdater.with(this).setHostUpdateCheckUrl("http://files.cnblogs.com/files/jebysun/app_version.js").check();
 ```
-4. 最后，在服务器放一个json规范格式的文件，该文件的url地址就是java代码中setHostUpdateCheckUrl方法的参数，文件内容如下：
+1. 最后，在服务器放一个json规范格式的文件，该文件的url地址就是java代码中setHostUpdateCheckUrl方法的参数，文件内容如下：
 ```javascript
 {
 	"versionCode":10,
