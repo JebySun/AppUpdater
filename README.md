@@ -36,10 +36,9 @@ dependencies {
 ```
 3.然后，在合适的位置（通常是Activity的onCreate方法内）加入以下一句代码即可：
 ```java
-// 自动检查更新
 AppUpdater.with(this).setHostUpdateCheckUrl("http://files.cnblogs.com/files/jebysun/app_version.js").check();
 ```
-4.最后，在服务器放一个json规范格式的文件，该文件的url地址就是java代码中setHostUpdateCheckUrl方法的参数，文件内容如下：
+4.最后，在服务器放一个json规范格式的文件，该文件的url地址就是java代码中setHostUpdateCheckUrl方法的参数，文件格式如下：
 ```javascript
 {
 	"versionCode":10,
