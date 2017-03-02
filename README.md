@@ -18,7 +18,8 @@
 <img src="other_files/screenshots/screenshot_3.jpg" alt="后台下载，通知栏显示进度。" title="后台下载，通知栏显示进度。" width="33%"/>
 
 ## 如何使用
-1.首先，添加jitpack支持，修改项目根目录下的build.gradle：
+1.首先，添加jitpack仓库支持和gradle依赖：  
+修改项目根目录下的build.gradle，增加项目jitpack仓库支持：
 ```gradle
 allprojects {
 		repositories {
@@ -27,18 +28,18 @@ allprojects {
 		}
 	}
 ```
-2.接着，添加gradle依赖，修改项目模块目录下的build.gradle：
+修改项目app模块目录下的build.gradle，添加gradle依赖：
 ```gradle
 dependencies {
 	...
 	compile 'com.github.JebySun:AppUpdater:v1.0.0'
 }
 ```
-3.然后，在合适的位置（通常是Activity的onCreate方法内）加入以下一句代码即可：
+2.然后，在合适的位置（通常是Activity的onCreate方法内）加入以下一句代码即可：
 ```java
 AppUpdater.with(this).setHostUpdateCheckUrl("http://files.cnblogs.com/files/jebysun/app_version.js").check();
 ```
-4.最后，在服务器放一个json规范格式的文件，该文件的url地址就是java代码中setHostUpdateCheckUrl方法的参数，文件格式如下：
+3.最后，在服务器放一个json规范格式的文件，该文件的url地址就是java代码中setHostUpdateCheckUrl方法的参数，文件格式如下：
 ```javascript
 {
 	"versionCode":10,
@@ -109,9 +110,8 @@ You may obtain a copy of the License at
 
    http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+See the License for the specific language governing permissions and limitations under the License.
 
