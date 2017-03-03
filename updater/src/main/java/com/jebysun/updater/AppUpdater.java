@@ -127,12 +127,12 @@ public class AppUpdater {
 						downloadFileName = downloadFileName + "_v" + appInfo.getVersionName()+ ".apk";
 
 						final String downloadUrl = appInfo.getApkUrl();
-						StringBuilder releaseNoteBuldr = new StringBuilder();
+						StringBuilder releaseNoteBuld = new StringBuilder();
 						List<String> releaseNoteList =appInfo.getReleaseNoteList();
 						for (int i=0; i<releaseNoteList.size(); i++) {
-							releaseNoteBuldr.append(releaseNoteList.get(i)).append("\n");
+							releaseNoteBuld.append(i+1).append(". ").append(releaseNoteList.get(i)).append("\n");
 						}
-						String updateMsg = (String) releaseNoteBuldr.subSequence(0, releaseNoteBuldr.length()-1);
+						String updateMsg = (String) releaseNoteBuld.subSequence(0, releaseNoteBuld.length()-1);
 
 						updateDialog = new CheckedDialogFragment();
 						updateDialog.setTitle("检测到新版本");
