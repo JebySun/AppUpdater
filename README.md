@@ -22,11 +22,11 @@
 修改项目根目录下的build.gradle，增加项目jitpack仓库支持：
 ```gradle
 allprojects {
-		repositories {
-			...
-			maven { url 'https://jitpack.io' }
-		}
+	repositories {
+		...
+		maven { url 'https://jitpack.io' }
 	}
+}
 ```
 修改项目app模块目录下的build.gradle，添加gradle依赖：
 ```gradle
