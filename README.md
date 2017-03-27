@@ -26,7 +26,7 @@ allprojects {
 	}
 }
 ```
-修改项目app模块目录下的build.gradle，添加gradle依赖：
+修改项目模块目录下的build.gradle，添加gradle依赖：
 ```gradle
 dependencies {
 	...
