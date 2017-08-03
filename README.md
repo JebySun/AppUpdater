@@ -35,7 +35,9 @@ dependencies {
 ```
 2.然后，在合适的位置（通常是Activity的onCreate方法内）加入以下一句代码即可：
 ```java
-AppUpdater.with(this).setHostUpdateCheckUrl("http://files.cnblogs.com/files/jebysun/app_version.js").check();
+AppUpdater.with(this)
+	.setHostUpdateCheckUrl("http://files.cnblogs.com/files/jebysun/app_version.js")
+	.check();
 ```
 3.最后，在服务器放一个json规范格式的文件，该文件的url地址就是java代码中setHostUpdateCheckUrl方法的参数，文件格式如下：
 ```javascript
@@ -100,10 +102,10 @@ private void checkNewVersion() {
 * jebysun(a)126.com
 
 ## License
-Copyright 2017 JebySun
+Copyright 2017 JebySun  
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
+Licensed under the Apache License, Version 2.0 (the "License");  
+you may not use this file except in compliance with the License.  
 You may obtain a copy of the License at
 
    http://www.apache.org/licenses/LICENSE-2.0
@@ -111,5 +113,6 @@ You may obtain a copy of the License at
 Unless required by applicable law or agreed to in writing,
 software distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and limitations under the License.
+See the License for the specific language governing permissions and  
+limitations under the License.
 
