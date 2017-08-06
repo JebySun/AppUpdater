@@ -20,7 +20,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         // 自动检查更新
-        AppUpdater.with(this).setHostUpdateCheckUrl("http://files.cnblogs.com/files/jebysun/app_version.js").check();
+        AppUpdater.with(this).setHostUpdateCheckUrl("https://gitee.com/jebysun/PublicResource/raw/master/AppUpdater/app_version.js").check();
 
 
         Button btnCheckUpdate = (Button) this.findViewById(R.id.btn_check_update);
@@ -43,7 +43,7 @@ public class MainActivity extends Activity {
         AppUpdater.with(this)
                 // 手动强制检查更新
                 .setForceMode(true)
-                .setHostUpdateCheckUrl("http://files.cnblogs.com/files/jebysun/app_version.js")
+                .setHostUpdateCheckUrl("https://gitee.com/jebysun/PublicResource/raw/master/AppUpdater/app_version.js")
                 // 检查结果回调
                 .setOnUpdateCheckResultListener(new OnUpdateCheckResultListener() {
                     @Override
