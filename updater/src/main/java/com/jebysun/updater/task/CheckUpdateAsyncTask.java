@@ -79,7 +79,7 @@ public class CheckUpdateAsyncTask extends AsyncTask<String, Integer, String> {
 			conn.setConnectTimeout(5000);
 			conn.setRequestMethod("GET");
 			conn.connect();
-			if (conn.getResponseCode() == 200) {
+			if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
 				BufferedReader bufReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 				String lineStr = null;
 				while ((lineStr = bufReader.readLine()) != null) {

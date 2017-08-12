@@ -1,6 +1,7 @@
 package com.jebysun.updater.task;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.jebysun.updater.service.UpdateService;
 
@@ -65,11 +66,14 @@ public class DownloadAsyncTask extends AsyncTask<String, Integer, String> {
 		int byteBufSize = BUF_SIZE_KB * 1024;
 		try {
 			//支持下载连接类型：
-//            downloadUrl = "http://dl.wavesuper.com/dl/20161018/20161018114326045/app_url_46.apk"; //OK
+//			downloadUrl = "http://files.cnblogs.com/files/jebysun/app-release.apk"; //OK
+            downloadUrl = "https://gitee.com/jebysun/PublicResource/raw/master/waca_release.apk"; //NO, 无法获取文件总大小。
 //            downloadUrl = "http://www.cr173.com/down.asp?id=3188"; //OK
 //            downloadUrl = "http://files.cnblogs.com/files/jebysun/豌豆荚.apk"; //OK
 //            downloadUrl = "http://files.cnblogs.com/files/jebysun/%E8%B1%8C%E8%B1%86%E8%8D%9A.apk"; //OK
 //            downloadUrl = "http://files.cnblogs.com/files/jebysun/%25E8%25B1%258C%25E8%25B1%2586%25E8%258D%259A.apk"; //OK
+//            downloadUrl = "http://imtt.dd.qq.com/16891/D2233EF6C81785F5C12CC61CC4DC0566.apk?fsname=com.yueren.pyyx_2.1.8_20181.apk&csr=1bbd";
+
 
 			//先解码，是预防URL已经编码，两次解码是预防要下载的文件使用中文URL编码为文件名。
 			downloadUrl = URLDecoder.decode(downloadUrl, "utf-8");
@@ -82,12 +86,15 @@ public class DownloadAsyncTask extends AsyncTask<String, Integer, String> {
 
 			URL url = new URL(downloadUrl);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setRequestProperty("Accept-Charset", "UTF-8");
-			conn.setRequestProperty("contentType", "UTF-8");
-			conn.setConnectTimeout(5000);
 			conn.setRequestMethod("GET");
+			conn.setRequestProperty("Accept-Encoding", "identity");
+			conn.setRequestProperty("Accept-Charset", "UTF-8");
+			conn.setRequestProperty("ContentType", "UTF-8");
+			conn.setConnectTimeout(5000);
 			if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
 				int length = conn.getContentLength();
+				//无法获取文件大小时，默认为0。
+				length = length == -1 ? 0 : length;
 				this.publishProgress(length, 0);
 				is = conn.getInputStream();
 				fos = new FileOutputStream(tempFile);

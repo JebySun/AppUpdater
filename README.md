@@ -36,7 +36,7 @@ dependencies {
 2.然后，在合适的位置（通常是Activity的onCreate方法内）加入以下一句代码即可：
 ```java
 AppUpdater.with(this)
-	.setHostUpdateCheckUrl("https://gitee.com/jebysun/PublicResource/raw/master/AppUpdater/app_version.js")
+	.setHostUpdateCheckUrl("https://github.com/JebySun/AppUpdater/raw/master/other_files/server_data/app_version.js")
 	.check();
 ```
 3.最后，在服务器放一个json规范格式的文件，该文件的url地址就是java代码中setHostUpdateCheckUrl方法的参数，文件格式如下：
@@ -45,11 +45,12 @@ AppUpdater.with(this)
 	"versionCode":10,
 	"versionName":"1.0.0",
 	"fileSize":"6.2M",
-	"apkUrl":"http://58.216.107.44/imtt.dd.qq.com/16891/36C5694F6FE468D788FFFC65166547BE.apk?mkey=58a403869c7c4c41&f=858&c=0&fsname=com.qiyi.video_8.1_80830.apk&csr=4d5s&p=.apk",
+	"apkUrl":"https://github.com/JebySun/AppUpdater/raw/master/other_files/server_data/mygame.apk",
 	"required":false,
 	"releaseDate":"2017-02-12 12:45:20",
 	"releaseNotes":["新版本特性新版本特性新版本特性；", "描述版本信息，方便用户选择是否立即下载更新；", "性能优化和BUG修复。"]
 }
+
 ```
 做完以上工作之后，运行吧！  
 
@@ -74,7 +75,7 @@ private void checkNewVersion() {
 	AppUpdater.with(this)
 			// 手动强制检查更新
 			.setForceMode(true)
-			.setHostUpdateCheckUrl("https://gitee.com/jebysun/PublicResource/raw/master/AppUpdater/app_version.js")
+			.setHostUpdateCheckUrl("https://github.com/JebySun/AppUpdater/raw/master/other_files/server_data/app_version.js")
 			// 检查结果回调
 			.setOnUpdateCheckResultListener(new OnUpdateCheckResultListener() {
 				@Override
