@@ -88,10 +88,10 @@ public class CheckedDialogFragment extends DialogFragment implements View.OnClic
     }
 
     private void initView() {
-        mTvTitle = (TextView) mRootView.findViewById(R.id.tv_title);
-        mTvMsg = (TextView) mRootView.findViewById(R.id.tv_msg);
-        mBtnOk = (Button) mRootView.findViewById(R.id.btn_ok);
-        mBtnCancel = (Button) mRootView.findViewById(R.id.btn_cancel);
+        mTvTitle = mRootView.findViewById(R.id.tv_title);
+        mTvMsg = mRootView.findViewById(R.id.tv_msg);
+        mBtnOk = mRootView.findViewById(R.id.btn_ok);
+        mBtnCancel = mRootView.findViewById(R.id.btn_cancel);
 
         mTvMsg.setGravity(mMsgViewGravity);
 
@@ -134,12 +134,7 @@ public class CheckedDialogFragment extends DialogFragment implements View.OnClic
     }
 
 
-
-
-
-
-
-    ///////////////////////////////////////////////
+///////////////////////////////////////////////
 
     public interface OnClickBtnListener {
         void clicked(CheckedDialogFragment dialog, int which);

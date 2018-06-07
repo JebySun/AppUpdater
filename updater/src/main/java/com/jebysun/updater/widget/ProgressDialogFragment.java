@@ -102,13 +102,13 @@ public class ProgressDialogFragment extends DialogFragment implements View.OnCli
     }
 
     private void initView() {
-        mTvTitle = (TextView) mRootView.findViewById(R.id.tv_title);
-        mProgressBar = (ProgressBar) mRootView.findViewById(R.id.progress_download);
-        mTvProgressMsg = (TextView) mRootView.findViewById(R.id.tv_progress_msg);
-        mTvProgressPercent = (TextView) mRootView.findViewById(R.id.tv_progress_percent);
-        mTvMsg = (TextView) mRootView.findViewById(R.id.tv_msg);
-        mBtnOk = (Button) mRootView.findViewById(R.id.btn_ok);
-        mBtnCancel = (Button) mRootView.findViewById(R.id.btn_cancel);
+        mTvTitle = mRootView.findViewById(R.id.tv_title);
+        mProgressBar = mRootView.findViewById(R.id.progress_download);
+        mTvProgressMsg = mRootView.findViewById(R.id.tv_progress_msg);
+        mTvProgressPercent = mRootView.findViewById(R.id.tv_progress_percent);
+        mTvMsg = mRootView.findViewById(R.id.tv_msg);
+        mBtnOk = mRootView.findViewById(R.id.btn_ok);
+        mBtnCancel = mRootView.findViewById(R.id.btn_cancel);
 
         mTvTitle.setText(mTvTitle!=null ? mTxtTitle : mTvTitle.getText());
         mTvMsg.setText(mTxtMsg!=null ? mTxtMsg : mTvMsg.getText());
@@ -151,6 +151,11 @@ public class ProgressDialogFragment extends DialogFragment implements View.OnCli
     }
 
     public void setProgress(float progress) {
+        if (this.mTaskTotal == 0F) {
+            indeterminateProgress(progress);
+            return;
+        }
+
         this.mTaskFinished = progress;
         //更新进度
         mProgressBar.setProgress((int) (mProgressBar.getMax() * progress/mTaskTotal));
@@ -160,6 +165,24 @@ public class ProgressDialogFragment extends DialogFragment implements View.OnCli
         mTvProgressMsg.setText(mFormat.replace("%1f", JavaUtil.formatFloat2String(mTaskFinished, 2)).replace("%2f", JavaUtil.formatFloat2String(mTaskTotal, 2)));
     }
 
+    /**
+     * 未知大小文件下载进度无法知道
+     * @param progress
+     */
+    private void indeterminateProgress(float progress) {
+        this.mTaskFinished = progress;
+        mProgressBar.setIndeterminate(true);
+        //更新进度
+        mProgressBar.setProgress(0);
+        //更新完成百分数
+        mTvProgressPercent.setVisibility(View.INVISIBLE);
+        //更新已下载多少兆字节
+        mTvProgressMsg.setText(mFormat.replace("%1f",JavaUtil.formatFloat2String(mTaskFinished, 2)));
+    }
+
+    public Button getButtonOk() {
+        return mBtnOk;
+    }
 
 
 

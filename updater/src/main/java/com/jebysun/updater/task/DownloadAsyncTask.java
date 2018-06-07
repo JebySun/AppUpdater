@@ -67,12 +67,12 @@ public class DownloadAsyncTask extends AsyncTask<String, Integer, String> {
 		try {
 			//支持下载连接类型：
 //			downloadUrl = "http://files.cnblogs.com/files/jebysun/app-release.apk"; //OK
-            downloadUrl = "https://gitee.com/jebysun/PublicResource/raw/master/waca_release.apk"; //NO, 无法获取文件总大小。
 //            downloadUrl = "http://www.cr173.com/down.asp?id=3188"; //OK
 //            downloadUrl = "http://files.cnblogs.com/files/jebysun/豌豆荚.apk"; //OK
 //            downloadUrl = "http://files.cnblogs.com/files/jebysun/%E8%B1%8C%E8%B1%86%E8%8D%9A.apk"; //OK
 //            downloadUrl = "http://files.cnblogs.com/files/jebysun/%25E8%25B1%258C%25E8%25B1%2586%25E8%258D%259A.apk"; //OK
 //            downloadUrl = "http://imtt.dd.qq.com/16891/D2233EF6C81785F5C12CC61CC4DC0566.apk?fsname=com.yueren.pyyx_2.1.8_20181.apk&csr=1bbd";
+//            downloadUrl = "https://gitee.com/zhiduopin/res/raw/master/ZhiDuoPin_release_majian.apk";
 
 
 			//先解码，是预防URL已经编码，两次解码是预防要下载的文件使用中文URL编码为文件名。
@@ -94,7 +94,7 @@ public class DownloadAsyncTask extends AsyncTask<String, Integer, String> {
 			if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
 				int length = conn.getContentLength();
 				//无法获取文件大小时，默认为0。
-				length = length == -1 ? 0 : length;
+				length = (length == -1) ? 0 : length;
 				this.publishProgress(length, 0);
 				is = conn.getInputStream();
 				fos = new FileOutputStream(tempFile);
@@ -103,17 +103,17 @@ public class DownloadAsyncTask extends AsyncTask<String, Integer, String> {
 				int finishedCount = 0;
 				while ((readLength = is.read(buffer)) != -1) {
 					fos.write(buffer, 0, readLength);
-					finishedCount = finishedCount + readLength;
+					finishedCount += readLength;
 					this.publishProgress(length, finishedCount);
 				}
 				fos.flush();
 				fos.close();
 				is.close();
+				tempFile.renameTo(file);
+				return "finished";
 			} else {
 				return "error";
 			}
-			tempFile.renameTo(file);
-			return "finished";
 		} catch (Exception e) {
 			e.printStackTrace();
 			try {
@@ -138,6 +138,7 @@ public class DownloadAsyncTask extends AsyncTask<String, Integer, String> {
     @Override  
     protected void onProgressUpdate(Integer... values) {
     	super.onProgressUpdate(values);
+    	Log.e("=======", values[0]+":"+values[1]);
     	//更新Progress进度
     	this.service.updateProgress(values);
     }  
@@ -151,10 +152,10 @@ public class DownloadAsyncTask extends AsyncTask<String, Integer, String> {
     @Override  
     protected void onPostExecute(String result) {
     	if (result.equals("error")) {
-			onProgressUpdate(-1);
+			onProgressUpdate(-1, 0);
     	} else if (result.equals("finished")) {
         	//清除进度显示
-			onProgressUpdate(-100);
+			onProgressUpdate(-100, 0);
     	}
     }
 

@@ -13,6 +13,7 @@ import com.jebysun.updater.listener.OnUpdateCheckResultListener;
 public class MainActivity extends Activity {
 
     private ProgressDialog mProgressDialog;
+    private String updateCheckUrl = "https://github.com/JebySun/AppUpdater/raw/master/other_files/server_data/app_version.js";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,11 +22,11 @@ public class MainActivity extends Activity {
 
         // 自动检查更新
         AppUpdater.with(this)
-                .setHostUpdateCheckUrl("https://github.com/JebySun/AppUpdater/raw/master/other_files/server_data/app_version.js")
+                .setHostUpdateCheckUrl(updateCheckUrl)
                 .check();
 
 
-        Button btnCheckUpdate = (Button) this.findViewById(R.id.btn_check_update);
+        Button btnCheckUpdate = this.findViewById(R.id.btn_check_update);
         btnCheckUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -45,7 +46,7 @@ public class MainActivity extends Activity {
         AppUpdater.with(this)
                 // 手动强制检查更新
                 .setForceMode(true)
-                .setHostUpdateCheckUrl("https://github.com/JebySun/AppUpdater/raw/master/other_files/server_data/app_version.js")
+                .setHostUpdateCheckUrl(updateCheckUrl)
                 // 检查结果回调
                 .setOnUpdateCheckResultListener(new OnUpdateCheckResultListener() {
                     @Override

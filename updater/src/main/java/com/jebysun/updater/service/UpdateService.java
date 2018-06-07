@@ -88,9 +88,9 @@ public class UpdateService extends Service {
      * @param values
      */
     public void updateProgress(Integer... values) {
-    	if(values[0]==-100) {
+    	if(values[0] == -100) {
     		updateListener.onDownloadFinish();
-    	} else if (values[0]==-1) {
+    	} else if (values[0] == -1) {
     		updateListener.onDownloadError("download error");
         } else if (System.currentTimeMillis()-lastUpdateTime>100) {
     		updateListener.onDownloading(values);
@@ -98,48 +98,6 @@ public class UpdateService extends Service {
     	}
     }
     
-    
-    
-    /**
-     * 解析检查更新xml文件字符串为Map对象
-     * @param xmlString
-     * @return
-     * @throws XmlPullParserException
-     * @throws IOException 
-     */
-    public Map<String, Object> parseXML(String xmlString) throws XmlPullParserException, IOException {
-    	Map<String, Object> hashMap = new HashMap<String, Object>();
-    	List<String> contentArray = new ArrayList<String>(); 
-    	
-    	XmlPullParser parser = Xml.newPullParser();  
-    	parser.setInput(new StringReader(xmlString));  
-    	int eventType = parser.getEventType();  
-    	while (eventType != XmlPullParser.END_DOCUMENT) {
-    		switch (eventType) {  
-    		case XmlPullParser.START_DOCUMENT:  
-    			break;  
-    		case XmlPullParser.START_TAG:
-    			if ("update".equals(parser.getName())) {  
-    				int count = parser.getAttributeCount();  
-    				for (int i = 0; i < count; i++) {  
-    					hashMap.put(parser.getAttributeName(i), parser.getAttributeValue(i));
-    				}  
-    			} else if ("content".equals(parser.getName())) {  
-    				eventType = parser.next();
-    			} else if ("item".equals(parser.getName())) {
-    				eventType = parser.next();
-    				contentArray.add(parser.getText());
-    			}
-    			break;
-    		case XmlPullParser.END_TAG: 
-    			break;  
-    		}  
-    		eventType = parser.next();  
-    	}
-    	hashMap.put("updateContent", contentArray);
-    	return hashMap;
-    }
-
 
 	public UpdateModel parseJson(String jsonStr) {
 		UpdateModel appInfo = new UpdateModel();

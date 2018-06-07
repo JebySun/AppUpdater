@@ -25,7 +25,6 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-
 /**
  * App实现自动更新
  * TODO：
@@ -89,7 +88,6 @@ public class AppUpdater {
 		if (serviceConn != null) {
 			context.unbindService(serviceConn);
 		}
-
 		serviceConn = new ServiceConnection() {
 			@Override
 			public void onServiceConnected(ComponentName name, IBinder service) {
@@ -105,15 +103,26 @@ public class AppUpdater {
 	                	if (values[1] == 0) {
 	                		//设置进度条对话框的最大值
 	                		fileSize = values[0];
-	                		progressDialog = setProgressTxtFormat(progressDialog);
+	                		progressDialog = setProgressTxtFormat(progressDialog, fileSize);
 	                	} else if (downloadInBack) { //后台下载，只更新通知中的进度条
-							int size = values[1];
-							size = (int) (size * 100.0F / fileSize);
-							customViews.setProgressBar(R.id.notify_progress, 100, size, false);
-							customViews.setTextViewText(R.id.notify_progress_percent, 100 * size / 100 + "%");
-							customViews.setTextViewText(R.id.notify_progress_size, format.replace("%1f", JavaUtil.formatFloat2String(values[1]/fCount, 2)).replace("%2f", JavaUtil.formatFloat2String(fileSize/fCount, 2)));
+							// 文件大小为0时
+							if (fileSize != 0) {
+								int size = values[1];
+								size = (int) (size * 100.0F / fileSize);
+								customViews.setProgressBar(R.id.notify_progress, 100, size, false);
+								customViews.setTextViewText(R.id.notify_progress_percent, 100 * size / 100 + "%");
+								customViews.setTextViewText(R.id.notify_progress_size, format.replace("%1f", JavaUtil.formatFloat2String(values[1]/fCount, 2)).replace("%2f", JavaUtil.formatFloat2String(fileSize/fCount, 2)));
+							} else {
+								customViews.setProgressBar(R.id.notify_progress, 100, 0, true);
+								customViews.setTextViewText(R.id.notify_progress_percent, "");
+								customViews.setTextViewText(R.id.notify_progress_size, format.replace("%1f", JavaUtil.formatFloat2String(values[1]/fCount, 2)));
+							}
 							notifyMgr.notify(DOWNLOAD_NOTIFY_ID, notifyBuilder.build());
 	                	} else {
+							// 文件大小为0时
+							if (fileSize == 0) {
+								progressDialog = setProgressTxtFormat(progressDialog, values[1]);
+							}
 	                		//设置进度条对话框进度
 	                		setProgressValue(progressDialog, values[1]/fCount);
 	                	}
@@ -171,7 +180,7 @@ public class AppUpdater {
 					public void onDownloadFinish() {
 						progressDialog.dismiss();
 						notifyMgr.cancel(DOWNLOAD_NOTIFY_ID);
-						//安装
+						// 安装
 						AndroidUtil.installApk(context, downloadPath + File.separator + getDownloadFileName());
 						release();
 					}
@@ -179,6 +188,7 @@ public class AppUpdater {
 					@Override
 					public void onDownloadError(String errorMsg) {
 						AndroidUtil.toast(context, "下载出错，请重试！");
+						progressDialog.getButtonOk().setEnabled(false);
 						release();
 					}
 
@@ -237,7 +247,9 @@ public class AppUpdater {
 	 * 释放
 	 */
 	private void release() {
-		context.unbindService(serviceConn);
+		if (context != null) {
+			context.unbindService(serviceConn);
+		}
 		updateService = null;
 		serviceConn = null;
 		notifyBuilder = null;
@@ -245,8 +257,8 @@ public class AppUpdater {
 		context = null;
 	}
 
-    private ProgressDialogFragment setProgressTxtFormat(ProgressDialogFragment pd) {
-    	float size = fileSize;
+    private ProgressDialogFragment setProgressTxtFormat(ProgressDialogFragment pd, long pSize) {
+    	float size = pSize;
     	String[] f = {"B", "KB", "MB", "GB"};
     	int formatCount = 0;
     	while(size>=1024) {
@@ -255,8 +267,12 @@ public class AppUpdater {
     	}
     	//统计转换单位量
     	fCount = (float) Math.pow(1024, formatCount);
-    	format = "%1f" + f[formatCount] + " / %2f" + f[formatCount];
-    	pd.setMax(size);
+    	if (fileSize != 0) {
+			format = "%1f" + f[formatCount] + " / %2f" + f[formatCount];
+			pd.setMax(size);
+		} else {
+			format = "%1f" + f[formatCount] + " / 未知大小";
+		}
     	pd.setProgressNumberFormat(format);
     	return pd;
     }
