@@ -30,7 +30,7 @@ allprojects {
 ```gradle
 dependencies {
 	...
-	compile 'com.github.JebySun:AppUpdater:v1.0.1'
+	compile 'com.github.JebySun:AppUpdater:v1.0.2'
 }
 ```
 2.然后，在合适的位置（通常是Activity的onCreate方法内）加入以下一句代码即可：
