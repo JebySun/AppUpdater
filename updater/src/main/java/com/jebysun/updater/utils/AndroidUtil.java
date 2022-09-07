@@ -17,6 +17,8 @@ import android.widget.Toast;
 
 import androidx.core.content.FileProvider;
 
+import com.jebysun.updater.BuildConfig;
+
 import java.io.File;
 import java.io.InputStream;
 
@@ -253,7 +255,7 @@ public final class AndroidUtil {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            Uri contentUri = FileProvider.getUriForFile(context, "com.jebysun.updater.fileprovider", apkFile);
+            Uri contentUri = FileProvider.getUriForFile(context, "com.jebysun.updater.demo.fileprovider", apkFile);
             intent.setDataAndType(contentUri, "application/vnd.android.package-archive");
         } else {
             intent.setDataAndType(Uri.fromFile(apkFile), "application/vnd.android.package-archive");

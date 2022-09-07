@@ -1,6 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.DayNight"></style>
+
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.DarkActionBar"></style>
 
 </resources>

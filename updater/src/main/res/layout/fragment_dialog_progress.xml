@@ -60,16 +60,17 @@
 
 
     <LinearLayout
-        android:layout_below="@id/progress_download"
+        android:layout_below="@id/tv_progress_msg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp">
         <Button android:id="@+id/btn_ok"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@null"
+            style="?android:attr/borderlessButtonStyle"
+            android:background="@color/white"
             android:textSize="16sp"
             android:textColor="@color/black"
             android:text="确定"/>
@@ -77,7 +78,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@null"
+            style="?android:attr/borderlessButtonStyle"
+            android:background="@color/white"
             android:textSize="16sp"
             android:textColor="@color/gray"
             android:text="取消"/>
