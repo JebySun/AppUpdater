@@ -1,1 +1,4 @@
-include ':app', ':updater'
+rootProject.name = "AppUpdater"
+include ':app'
+include ':updater'
+

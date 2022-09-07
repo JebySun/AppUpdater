@@ -1,18 +1,25 @@
 package com.jebysun.updater;
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.DialogFragment;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
 import android.view.Gravity;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
-import com.jebysun.updater.listener.OnUpdateCheckResultListener;
+import androidx.core.app.NotificationCompat;
+
+import com.jebysun.updater.listener.UpdateCheckCallback;
 import com.jebysun.updater.listener.UpdateListener;
 import com.jebysun.updater.model.UpdateModel;
 import com.jebysun.updater.service.UpdateService;
@@ -37,6 +44,7 @@ import java.util.Map;
 public class AppUpdater {
 
 	public static final int DOWNLOAD_NOTIFY_ID = 1;
+	public static final String NOTIFICATION_CHANNEL_ID = "notification_channel_download";
 
 	private String hostUpdateCheckUrl;
 	private String downloadFileName;
@@ -49,7 +57,7 @@ public class AppUpdater {
 	private RemoteViews customViews;
 	private CheckedDialogFragment updateDialog;
 
-	private OnUpdateCheckResultListener updateCheckListener;
+	private UpdateCheckCallback updateCheckCallback;
 
 	private boolean forceCheckMode;
 	private long fileSize;
@@ -76,7 +84,7 @@ public class AppUpdater {
      */
 	public static AppUpdater with(Context context) {
 		if (!(context instanceof Activity)) {
-			throw new RuntimeException("ensure parameter \"context\" is instance of Activity");
+			throw new RuntimeException("Ensure parameter \"context\" is instance of Activity");
 		}
 		return new AppUpdater(context);
 	}
@@ -130,18 +138,18 @@ public class AppUpdater {
 
 					@Override
 					public void onFoundNewVersion(UpdateModel appInfo) {
-						if (updateCheckListener != null) {
-							updateCheckListener.onSuccess(true);
+						if (updateCheckCallback != null) {
+							updateCheckCallback.onSuccess(true);
 						}
 						downloadFileName = downloadFileName + "_v" + appInfo.getVersionName()+ ".apk";
 
 						final String downloadUrl = appInfo.getApkUrl();
-						StringBuilder releaseNoteBuld = new StringBuilder();
+						StringBuilder releaseNoteBuild = new StringBuilder();
 						List<String> releaseNoteList =appInfo.getReleaseNoteList();
 						for (int i=0; i<releaseNoteList.size(); i++) {
-							releaseNoteBuld.append(i+1).append(". ").append(releaseNoteList.get(i)).append("\n");
+							releaseNoteBuild.append(i+1).append(". ").append(releaseNoteList.get(i)).append("\n");
 						}
-						String updateMsg = (String) releaseNoteBuld.subSequence(0, releaseNoteBuld.length()-1);
+						String updateMsg = (String) releaseNoteBuild.subSequence(0, releaseNoteBuild.length()-1);
 
 						updateDialog = new CheckedDialogFragment();
 						updateDialog.setTitle("检测到新版本");
@@ -154,8 +162,7 @@ public class AppUpdater {
 							public void clicked(CheckedDialogFragment dialog, int which) {
 								switch (which) {
 									case CheckedDialogFragment.BTN_OK:
-										dialog.dismiss();
-										fileDownload(downloadUrl);
+										doDownload(updateDialog, downloadUrl);
 										break;
 									case CheckedDialogFragment.BTN_CANCEL:
 										release();
@@ -169,8 +176,8 @@ public class AppUpdater {
 
 					@Override
 					public void onNoFoundNewVersion() {
-						if (forceCheckMode && updateCheckListener!=null) {
-							updateCheckListener.onSuccess(false);
+						if (forceCheckMode && updateCheckCallback!=null) {
+							updateCheckCallback.onSuccess(false);
 							forceCheckMode = false;
 						}
 						release();
@@ -178,7 +185,7 @@ public class AppUpdater {
 
 					@Override
 					public void onDownloadFinish() {
-						progressDialog.dismiss();
+						progressDialog.dismissAllowingStateLoss();
 						notifyMgr.cancel(DOWNLOAD_NOTIFY_ID);
 						// 安装
 						AndroidUtil.installApk(context, downloadPath + File.separator + getDownloadFileName());
@@ -194,8 +201,8 @@ public class AppUpdater {
 
 					@Override
 					public void onCheckError(String errorMsg) {
-						if (updateCheckListener != null) {
-							updateCheckListener.onError(errorMsg);
+						if (updateCheckCallback != null) {
+							updateCheckCallback.onError(errorMsg);
 						}
 						release();
 					}
@@ -213,6 +220,23 @@ public class AppUpdater {
 		context.bindService(updateIntent, serviceConn, Context.BIND_AUTO_CREATE);
 	}
 
+	/**
+	 * Android 6.0以上检测文件写权限，然后下载
+	 * @param dialog
+	 * @param downloadUrl
+	 */
+	private void doDownload(DialogFragment dialog, String downloadUrl) {
+		dialog.dismiss();
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			int allowed = context.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+			if (allowed != PackageManager.PERMISSION_GRANTED) {
+				Toast.makeText(context, "请先获取文件读写权限", Toast.LENGTH_LONG).show();
+				return;
+			}
+		}
+		fileDownload(downloadUrl);
+	}
+
 
 
 	private void fileDownload(String downloadUrl) {
@@ -221,6 +245,7 @@ public class AppUpdater {
 		progressDialog.setMessage("正在下载新版本，请稍后...");
 		progressDialog.setPositiveButton("后台下载");
 		progressDialog.setNegativeButton("取消下载");
+		progressDialog.setCancelable(false);
 		progressDialog.setOnButtonClickListener(new ProgressDialogFragment.OnClickBtnListener() {
 			@Override
 			public void clicked(ProgressDialogFragment dialog, int which) {
@@ -230,7 +255,7 @@ public class AppUpdater {
 						downloadInNotification();
 						break;
 					case CheckedDialogFragment.BTN_CANCEL:
-						//TODO 下载过程中取消下载
+						//下载过程中取消下载
 						release();
 						break;
 				}
@@ -240,11 +265,11 @@ public class AppUpdater {
 		progressDialog.show(((Activity)context).getFragmentManager(), "ProgressDialogFragment");
 
 		//调用服务的文件下载方法
-		updateService.startDownLoadTask(downloadUrl, downloadPath, downloadFileName);
+		updateService.startDownLoadTask(downloadUrl, this.downloadPath, this.downloadFileName);
 	}
 
 	/**
-	 * 释放
+	 * 释放Service
 	 */
 	private void release() {
 		if (context != null) {
@@ -316,17 +341,26 @@ public class AppUpdater {
 	 * 后台下载
 	 */
 	private void downloadInNotification() {
-		notifyBuilder = new NotificationCompat.Builder(context);
+		NotificationManager notifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+		// 高版本需要渠道
+		if(Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+			// 只在Android O之上需要渠道
+			NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,"文件下载", NotificationManager.IMPORTANCE_LOW);
+			// 如果这里用IMPORTANCE_NOENE就需要在系统的设置里面开启渠道，通知才能正常弹出
+			notifyMgr.createNotificationChannel(notificationChannel);
+		}
+
+		notifyBuilder = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID);
 		notifyBuilder.setSmallIcon(iconResId);
 		//使用系统自带下载动态图标
 		notifyBuilder.setSmallIcon(iconResId);
-		notifyBuilder.setTicker("["+appName+"]" + "已转入后台下载");
+		notifyBuilder.setTicker(appName + "已转入后台下载");
 		notifyBuilder.setAutoCancel(true);
 		notifyBuilder.setOngoing(true);
 		notifyBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
 		customViews = new RemoteViews(context.getPackageName(), R.layout.layout_notification_download);
 		customViews.setImageViewResource(R.id.notify_icon, iconResId);
-		customViews.setTextViewText(R.id.notify_title, "["+appName+"]" + "下载中");
+		customViews.setTextViewText(R.id.notify_title, appName + "正在下载");
 		//当前下载进度设置
 		//============start=================
 		customViews.setTextViewText(R.id.notify_progress_percent, "0%");
@@ -335,7 +369,8 @@ public class AppUpdater {
 		//============end=================
 		notifyBuilder.setContent(customViews);
 
-		NotificationManager notifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+
 		notifyMgr.notify(DOWNLOAD_NOTIFY_ID, notifyBuilder.build());
 		downloadInBack = true;
 	}
@@ -380,12 +415,12 @@ public class AppUpdater {
 	}
 
 	/**
-	 * 设置检查更新结果事件通知，手动检查更新时可使用，以便应用给出检查结果提示。
-	 * @param listener
+	 * 设置检查更新结果通知，手动检查更新时可使用，以便应用给出检查结果提示。
+	 * @param callback
 	 * @return
      */
-	public AppUpdater setOnUpdateCheckResultListener(OnUpdateCheckResultListener listener) {
-		this.updateCheckListener = listener;
+	public AppUpdater setUpdateCheckCallback(UpdateCheckCallback callback) {
+		this.updateCheckCallback = callback;
 		return this;
 	}
 

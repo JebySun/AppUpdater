@@ -66,11 +66,11 @@ public class DownloadAsyncTask extends AsyncTask<String, Integer, String> {
 		int byteBufSize = BUF_SIZE_KB * 1024;
 		try {
 			//支持下载连接类型：
-//			downloadUrl = "http://files.cnblogs.com/files/jebysun/app-release.apk"; //OK
-//            downloadUrl = "http://www.cr173.com/down.asp?id=3188"; //OK
-//            downloadUrl = "http://files.cnblogs.com/files/jebysun/豌豆荚.apk"; //OK
-//            downloadUrl = "http://files.cnblogs.com/files/jebysun/%E8%B1%8C%E8%B1%86%E8%8D%9A.apk"; //OK
-//            downloadUrl = "http://files.cnblogs.com/files/jebysun/%25E8%25B1%258C%25E8%25B1%2586%25E8%258D%259A.apk"; //OK
+//			downloadUrl = "http://files.cnblogs.com/files/jebysun/app-release.apk";
+//            downloadUrl = "http://www.cr173.com/down.asp?id=3188";
+//            downloadUrl = "http://files.cnblogs.com/files/jebysun/豌豆荚.apk";
+//            downloadUrl = "http://files.cnblogs.com/files/jebysun/%E8%B1%8C%E8%B1%86%E8%8D%9A.apk";
+//            downloadUrl = "http://files.cnblogs.com/files/jebysun/%25E8%25B1%258C%25E8%25B1%2586%25E8%258D%259A.apk";
 //            downloadUrl = "http://imtt.dd.qq.com/16891/D2233EF6C81785F5C12CC61CC4DC0566.apk?fsname=com.yueren.pyyx_2.1.8_20181.apk&csr=1bbd";
 //            downloadUrl = "https://gitee.com/zhiduopin/res/raw/master/ZhiDuoPin_release_majian.apk";
 
@@ -81,7 +81,7 @@ public class DownloadAsyncTask extends AsyncTask<String, Integer, String> {
 			//url编码兼容处理
 			downloadUrl = URLEncoder.encode(downloadUrl, "utf-8").replaceAll("\\+", "%20");
 			downloadUrl = downloadUrl.replaceAll("%3A", ":").replaceAll("%2F", "/").replaceAll("%3F", "?").replaceAll("%3D", "=").replaceAll("%26", "&");
-			tempFile = new File(file.getAbsolutePath() + ".temp");
+			tempFile = new File(file.getAbsolutePath() + ".downloading");
 			tempFile.createNewFile();
 
 			URL url = new URL(downloadUrl);
@@ -138,7 +138,6 @@ public class DownloadAsyncTask extends AsyncTask<String, Integer, String> {
     @Override  
     protected void onProgressUpdate(Integer... values) {
     	super.onProgressUpdate(values);
-    	Log.e("=======", values[0]+":"+values[1]);
     	//更新Progress进度
     	this.service.updateProgress(values);
     }  

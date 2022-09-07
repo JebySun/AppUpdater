@@ -3,8 +3,6 @@ package com.jebysun.updater.widget;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -13,6 +11,9 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.jebysun.updater.R;
 import com.jebysun.updater.utils.AndroidUtil;
@@ -23,13 +24,12 @@ import com.jebysun.updater.utils.AndroidUtil;
 
 public class CheckedDialogFragment extends DialogFragment implements View.OnClickListener {
 
+    private static final float WIDTH_PERCENT = 0.8F;
+
     public static final int BTN_OK = 1;
     public static final int BTN_CANCEL = 2;
 
-    private Dialog mDialog;
-    private Window mWindow;
 
-    private View mRootView;
     private TextView mTvTitle;
     private TextView mTvMsg;
     private Button mBtnOk;
@@ -38,6 +38,7 @@ public class CheckedDialogFragment extends DialogFragment implements View.OnClic
     private OnClickBtnListener mClickListener;
 
     private int mMsgViewGravity = Gravity.CENTER;
+    private boolean mCancelable = true;
     private boolean mCanceledOnTouchOutside = true;
 
     private String mTxtTitle;
@@ -47,16 +48,54 @@ public class CheckedDialogFragment extends DialogFragment implements View.OnClic
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        init();
-        mRootView = inflater.inflate(R.layout.fragment_dialog_checkedmsg, container);
-        initView();
-        return mRootView;
+        return inflater.inflate(R.layout.fragment_dialog_checkedmsg, container, false);
+    }
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.UpdaterDialog);
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mWindow.setLayout((int)(AndroidUtil.getScreenWidth(getActivity()) * 0.8), ViewGroup.LayoutParams.WRAP_CONTENT);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        initView(view);
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        initDialog(getDialog());
+    }
+
+    private void initView(View view) {
+        mTvTitle = view.findViewById(R.id.tv_title);
+        mTvMsg = view.findViewById(R.id.tv_msg);
+        mBtnOk = view.findViewById(R.id.btn_ok);
+        mBtnCancel = view.findViewById(R.id.btn_cancel);
+
+        mTvMsg.setGravity(mMsgViewGravity);
+
+        mTvTitle.setText(mTvTitle!=null ? mTxtTitle : mTvTitle.getText());
+        mTvMsg.setText(mTxtMsg!=null ? mTxtMsg : mTvMsg.getText());
+        mBtnOk.setText(mTxtBtnOk!=null ? mTxtBtnOk : mBtnOk.getText());
+        mBtnCancel.setText(mTxtBtnCancel!=null ? mTxtBtnCancel : mBtnCancel.getText());
+
+        mBtnOk.setOnClickListener(this);
+        mBtnCancel.setOnClickListener(this);
+    }
+
+    public void initDialog(Dialog dialog) {
+        dialog.setCancelable(mCancelable);
+        dialog.setCanceledOnTouchOutside(mCanceledOnTouchOutside);
+        Window window = dialog.getWindow();
+        int width = (int) (AndroidUtil.getScreenWidth(window.getContext()) * WIDTH_PERCENT);
+        window.setGravity(Gravity.CENTER);
+        window.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT);
+        window.setBackgroundDrawableResource(R.drawable.drawable_dialog_bg);
     }
 
     @Override
@@ -72,37 +111,13 @@ public class CheckedDialogFragment extends DialogFragment implements View.OnClic
                 mClickListener.clicked(this, BTN_OK);
             }
         } else if (view == mBtnCancel) {
-            mDialog.dismiss();
+            this.dismiss();
             if (mClickListener != null) {
                 mClickListener.clicked(this, BTN_CANCEL);
             }
         }
     }
 
-    private void init() {
-        mDialog = getDialog();
-        mWindow = mDialog.getWindow();
-        mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        mDialog.setCanceledOnTouchOutside(mCanceledOnTouchOutside);
-    }
-
-    private void initView() {
-        mTvTitle = mRootView.findViewById(R.id.tv_title);
-        mTvMsg = mRootView.findViewById(R.id.tv_msg);
-        mBtnOk = mRootView.findViewById(R.id.btn_ok);
-        mBtnCancel = mRootView.findViewById(R.id.btn_cancel);
-
-        mTvMsg.setGravity(mMsgViewGravity);
-
-        mTvTitle.setText(mTvTitle!=null ? mTxtTitle : mTvTitle.getText());
-        mTvMsg.setText(mTxtMsg!=null ? mTxtMsg : mTvMsg.getText());
-        mBtnOk.setText(mTxtBtnOk!=null ? mTxtBtnOk : mBtnOk.getText());
-        mBtnCancel.setText(mTxtBtnCancel!=null ? mTxtBtnCancel : mBtnCancel.getText());
-
-        mBtnOk.setOnClickListener(this);
-        mBtnCancel.setOnClickListener(this);
-    }
 
 
     public void setTitle(String title) {

@@ -5,7 +5,7 @@ package com.jebysun.updater.listener;
  * @author JebySun
  *
  */
-public interface OnUpdateCheckResultListener {
+public interface UpdateCheckCallback {
 	
 	void onSuccess(boolean hasNew);
 	void onError(String msg);

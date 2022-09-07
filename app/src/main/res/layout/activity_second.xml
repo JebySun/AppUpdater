@@ -4,19 +4,13 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.jebysun.appupdater.MainActivity">
+    android:orientation="vertical">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="AppUpdater是Android平台上的应用检查更新库。" />
+        android:text="下载在后台Service继续，完成后跳出安装界面。" />
 
-    <Button android:id="@+id/btn_check_update"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:text="检查更新"/>
 
 
 </LinearLayout>

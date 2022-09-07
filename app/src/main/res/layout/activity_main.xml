@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.jebysun.demo.MainActivity">
+    tools:context=".MainActivity">
 
     <TextView
         android:layout_width="wrap_content"
@@ -17,6 +17,13 @@
         android:layout_height="wrap_content"
         android:padding="8dp"
         android:text="检查更新"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:onClick="toNextActivity"
+        android:text="跳转到下一个页面"/>
 
 
 </LinearLayout>

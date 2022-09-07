@@ -3,9 +3,8 @@ package com.jebysun.updater.widget;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,9 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.jebysun.updater.R;
 import com.jebysun.updater.utils.AndroidUtil;
@@ -24,13 +26,11 @@ import com.jebysun.updater.utils.JavaUtil;
 
 public class ProgressDialogFragment extends DialogFragment implements View.OnClickListener {
 
+    private static final float WIDTH_PERCENT = 0.8F;
+
     public static final int BTN_OK = 1;
     public static final int BTN_CANCEL = 2;
 
-    private Dialog mDialog;
-    private Window mWindow;
-
-    private View mRootView;
     private TextView mTvTitle;
     private ProgressBar mProgressBar;
     private TextView mTvProgressMsg;
@@ -51,26 +51,38 @@ public class ProgressDialogFragment extends DialogFragment implements View.OnCli
     private float mTaskFinished;
 
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        init();
-        mRootView = inflater.inflate(R.layout.fragment_dialog_progress, container);
-        return mRootView;
+        return inflater.inflate(R.layout.fragment_dialog_progress, container, false);
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mWindow.setLayout((int)(AndroidUtil.getScreenWidth(getActivity()) * 0.8), ViewGroup.LayoutParams.WRAP_CONTENT);
-        initView();
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.UpdaterDialog);
     }
 
     @Override
-    public void onPause() {
-        this.dismiss();
-        super.onPause();
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        initView(view);
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        initDialog(getDialog());
+    }
+
+    public void initDialog(Dialog dialog) {
+        dialog.setCanceledOnTouchOutside(false);
+        Window window = dialog.getWindow();
+        int width = (int) (AndroidUtil.getScreenWidth(window.getContext()) * WIDTH_PERCENT);
+        window.setGravity(Gravity.CENTER);
+        window.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT);
+        window.setBackgroundDrawableResource(R.drawable.drawable_dialog_bg);
+    }
 
     //TODO 下载过程中取消下载
     @Override
@@ -86,29 +98,22 @@ public class ProgressDialogFragment extends DialogFragment implements View.OnCli
                 mClickListener.clicked(this, BTN_OK);
             }
         } else if (view == mBtnCancel) {
-            mDialog.dismiss();
+            this.dismiss();
             if (mClickListener != null) {
                 mClickListener.clicked(this, BTN_CANCEL);
             }
         }
     }
 
-    private void init() {
-        mDialog = getDialog();
-        mWindow = mDialog.getWindow();
-        mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        mDialog.setCanceledOnTouchOutside(true);
-    }
 
-    private void initView() {
-        mTvTitle = mRootView.findViewById(R.id.tv_title);
-        mProgressBar = mRootView.findViewById(R.id.progress_download);
-        mTvProgressMsg = mRootView.findViewById(R.id.tv_progress_msg);
-        mTvProgressPercent = mRootView.findViewById(R.id.tv_progress_percent);
-        mTvMsg = mRootView.findViewById(R.id.tv_msg);
-        mBtnOk = mRootView.findViewById(R.id.btn_ok);
-        mBtnCancel = mRootView.findViewById(R.id.btn_cancel);
+    private void initView(View view) {
+        mTvTitle = view.findViewById(R.id.tv_title);
+        mProgressBar = view.findViewById(R.id.progress_download);
+        mTvProgressMsg = view.findViewById(R.id.tv_progress_msg);
+        mTvProgressPercent = view.findViewById(R.id.tv_progress_percent);
+        mTvMsg = view.findViewById(R.id.tv_msg);
+        mBtnOk = view.findViewById(R.id.btn_ok);
+        mBtnCancel = view.findViewById(R.id.btn_cancel);
 
         mTvTitle.setText(mTvTitle!=null ? mTxtTitle : mTvTitle.getText());
         mTvMsg.setText(mTxtMsg!=null ? mTxtMsg : mTvMsg.getText());
