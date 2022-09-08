@@ -20,7 +20,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String UPDATE_URL = "https://gitee.com/jebysun/website/raw/master/appdata/recycler/app_update_version.json";
+    private static final String UPDATE_URL = "https://gitee.com/jebysun/website/raw/master/appdata/recycler/app_latest_version.json";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

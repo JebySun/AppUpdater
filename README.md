@@ -36,7 +36,7 @@ dependencies {
 2.然后，在Activity的onCreate方法内加入以下一句代码即可：
 ```java
 AppUpdater.with(this)
-	.setHostUpdateCheckUrl("https://gitee.com/jebysun/website/raw/master/appdata/recycler/app_update_version.json")
+	.setHostUpdateCheckUrl("https://gitee.com/jebysun/website/raw/master/appdata/recycler/app_latest_version.json")
 	.check();
 ```
 3.最后，在服务器放一个json规范格式的文件，该文件的url地址就是java代码中setHostUpdateCheckUrl方法的参数，json格式如下：
@@ -55,7 +55,6 @@ AppUpdater.with(this)
 
 另外，如果需要手动检查更新，可以这样写：
 ```java
-
 /**
  * 手动检查更新
  */
@@ -63,7 +62,7 @@ private void checkNewVersion() {
 	AppUpdater.with(this)
 			// 手动强制检查更新
 			.setForceMode(true)
-			.setHostUpdateCheckUrl("https://gitee.com/jebysun/website/raw/master/appdata/recycler/app_update_version.json")
+			.setHostUpdateCheckUrl("https://gitee.com/jebysun/website/raw/master/appdata/recycler/app_latest_version.json")
 			// 检查结果回调
 			.setUpdateCheckCallback(new UpdateCheckCallback() {
 				@Override
