@@ -145,11 +145,11 @@ public class AppUpdater {
 
 						final String downloadUrl = appInfo.getApkUrl();
 						StringBuilder releaseNoteBuild = new StringBuilder();
-						List<String> releaseNoteList =appInfo.getReleaseNoteList();
+						List<String> releaseNoteList = appInfo.getReleaseNoteList();
 						for (int i=0; i<releaseNoteList.size(); i++) {
 							releaseNoteBuild.append(i+1).append(". ").append(releaseNoteList.get(i)).append("\n");
 						}
-						String updateMsg = (String) releaseNoteBuild.subSequence(0, releaseNoteBuild.length()-1);
+						String updateMsg = releaseNoteBuild.substring(0, releaseNoteBuild.length() - 1);
 
 						updateDialog = new CheckedDialogFragment();
 						updateDialog.setTitle("检测到新版本");
@@ -328,13 +328,13 @@ public class AppUpdater {
 		updateInfo.append("\n发布日期：");
 		updateInfo.append(map.get("date"));
 		updateInfo.append("\n\n更新内容：");
-		StringBuffer updateItem = new StringBuffer(updateInfo);
+		StringBuffer updateItemStr = new StringBuffer(updateInfo);
 		List<String> list = (List<String>) map.get("updateContent");
 		for (String string : list) {
-			updateItem.append("\n");
-			updateItem.append(string);
+			updateItemStr.append("\n");
+			updateItemStr.append(string);
 		}
-		return updateItem.toString();
+		return updateItemStr.toString();
 	}
 
 	/**

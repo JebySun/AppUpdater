@@ -3,7 +3,10 @@ package com.jebysun.updater.widget;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.graphics.Paint;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.style.LeadingMarginSpan;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -79,10 +82,19 @@ public class CheckedDialogFragment extends DialogFragment implements View.OnClic
 
         mTvMsg.setGravity(mMsgViewGravity);
 
-        mTvTitle.setText(mTvTitle!=null ? mTxtTitle : mTvTitle.getText());
-        mTvMsg.setText(mTxtMsg!=null ? mTxtMsg : mTvMsg.getText());
-        mBtnOk.setText(mTxtBtnOk!=null ? mTxtBtnOk : mBtnOk.getText());
-        mBtnCancel.setText(mTxtBtnCancel!=null ? mTxtBtnCancel : mBtnCancel.getText());
+        mTvTitle.setText(mTvTitle != null ? mTxtTitle : mTvTitle.getText());
+
+        // 更新描述换行缩进
+        Paint tvPaint = mTvMsg.getPaint();
+        float rawIndentWidth = tvPaint.measureText("1. ");
+        SpannableString spannableString = new SpannableString(mTxtMsg != null ? mTxtMsg : mTvMsg.getText());
+        LeadingMarginSpan.Standard marginSpan = new LeadingMarginSpan.Standard(0, (int) rawIndentWidth);
+        spannableString.setSpan(marginSpan, 0, spannableString.length(), SpannableString.SPAN_INCLUSIVE_INCLUSIVE);
+        mTvMsg.setText(spannableString);
+
+
+        mBtnOk.setText(mTxtBtnOk != null ? mTxtBtnOk : mBtnOk.getText());
+        mBtnCancel.setText(mTxtBtnCancel != null ? mTxtBtnCancel : mBtnCancel.getText());
 
         mBtnOk.setOnClickListener(this);
         mBtnCancel.setOnClickListener(this);
