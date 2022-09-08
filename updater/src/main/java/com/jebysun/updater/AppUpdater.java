@@ -30,7 +30,6 @@ import com.jebysun.updater.widget.ProgressDialogFragment;
 
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 
 /**
  * App实现自动更新
@@ -62,7 +61,7 @@ public class AppUpdater {
 	private boolean forceCheckMode;
 	private long fileSize;
 	private boolean downloadInBack;
-	private float fCount = 1f; //转换单位量
+	private float fCount = 1F; //转换单位量
 	private String format;     //下载进度信息格式
 	private int iconResId;
 	private String appName;
@@ -193,9 +192,17 @@ public class AppUpdater {
 					}
 
 					@Override
-					public void onDownloadError(String errorMsg) {
-						AndroidUtil.toast(context, "下载出错，请重试！");
-						progressDialog.getButtonOk().setEnabled(false);
+					public void onDownloadCanceled() {
+						progressDialog.dismissAllowingStateLoss();
+						notifyMgr.cancel(DOWNLOAD_NOTIFY_ID);
+						release();
+					}
+
+					@Override
+					public void onDownloadFailed(String errorMsg) {
+						progressDialog.dismissAllowingStateLoss();
+						notifyMgr.cancel(DOWNLOAD_NOTIFY_ID);
+						AndroidUtil.toast(context, "下载失败，请重试！");
 						release();
 					}
 
@@ -312,37 +319,12 @@ public class AppUpdater {
     }
 
 
-    /**
-     * 获取新版本更新详情
-     * @param map
-     * @return
-     */
-	@SuppressWarnings("unchecked")
-	private String getUpdateMessage(Map<String, Object> map) {
-		StringBuffer updateInfo = new StringBuffer("最新版本：");
-		updateInfo.append(map.get("versionName"));
-		updateInfo.append("    本机版本：");
-		updateInfo.append(map.get("localVerName"));
-		updateInfo.append("\n文件大小：");
-		updateInfo.append(map.get("fileSize"));
-		updateInfo.append("\n发布日期：");
-		updateInfo.append(map.get("date"));
-		updateInfo.append("\n\n更新内容：");
-		StringBuffer updateItemStr = new StringBuffer(updateInfo);
-		List<String> list = (List<String>) map.get("updateContent");
-		for (String string : list) {
-			updateItemStr.append("\n");
-			updateItemStr.append(string);
-		}
-		return updateItemStr.toString();
-	}
-
 	/**
 	 * 后台下载
 	 */
 	private void downloadInNotification() {
 		NotificationManager notifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-		// 高版本需要渠道
+		// 高版本需要通知渠道
 		if(Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
 			// 只在Android O之上需要渠道
 			NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,"文件下载", NotificationManager.IMPORTANCE_LOW);

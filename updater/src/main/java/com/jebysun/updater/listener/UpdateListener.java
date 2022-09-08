@@ -14,5 +14,6 @@ public interface UpdateListener {
 
 	void onDownloading(Integer... values);
 	void onDownloadFinish();
-	void onDownloadError(String errorMsg);
+	void onDownloadCanceled();
+	void onDownloadFailed(String errorMsg);
 }

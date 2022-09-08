@@ -64,6 +64,10 @@ public class DownloadAsyncTask extends AsyncTask<String, Integer, String> {
 		InputStream is = null;
 		FileOutputStream fos = null;
 		int byteBufSize = BUF_SIZE_KB * 1024;
+
+		tempFile = new File(file.getAbsolutePath() + ".downloading");
+		if (tempFile.exists()) tempFile.delete();
+
 		try {
 			//支持下载连接类型：
 //			downloadUrl = "http://files.cnblogs.com/files/jebysun/app-release.apk";
@@ -81,8 +85,6 @@ public class DownloadAsyncTask extends AsyncTask<String, Integer, String> {
 			//url编码兼容处理
 			downloadUrl = URLEncoder.encode(downloadUrl, "utf-8").replaceAll("\\+", "%20");
 			downloadUrl = downloadUrl.replaceAll("%3A", ":").replaceAll("%2F", "/").replaceAll("%3F", "?").replaceAll("%3D", "=").replaceAll("%26", "&");
-			tempFile = new File(file.getAbsolutePath() + ".downloading");
-			tempFile.createNewFile();
 
 			URL url = new URL(downloadUrl);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -102,6 +104,10 @@ public class DownloadAsyncTask extends AsyncTask<String, Integer, String> {
 				int readLength = 0;
 				int finishedCount = 0;
 				while ((readLength = is.read(buffer)) != -1) {
+					// 下载被取消
+					if (isCancelled()) {
+						break;
+					}
 					fos.write(buffer, 0, readLength);
 					finishedCount += readLength;
 					this.publishProgress(length, finishedCount);
@@ -109,6 +115,12 @@ public class DownloadAsyncTask extends AsyncTask<String, Integer, String> {
 				fos.flush();
 				fos.close();
 				is.close();
+				// 下载被取消，删除未下载完成的文件
+				if (isCancelled()) {
+					if (tempFile.exists()) tempFile.delete();
+					return "canceled";
+				}
+				if (file.exists()) file.delete();
 				tempFile.renameTo(file);
 				return "finished";
 			} else {
@@ -123,9 +135,7 @@ public class DownloadAsyncTask extends AsyncTask<String, Integer, String> {
 				ie.printStackTrace();
 				return "error";
 			}
-			if (tempFile.exists()) {
-				tempFile.delete();
-			}
+			if (tempFile.exists()) tempFile.delete();
 			return "error";
 		}
 	}
@@ -152,10 +162,11 @@ public class DownloadAsyncTask extends AsyncTask<String, Integer, String> {
     protected void onPostExecute(String result) {
     	if (result.equals("error")) {
 			onProgressUpdate(-1, 0);
-    	} else if (result.equals("finished")) {
-        	//清除进度显示
+    	} else if (result.equals("canceled")) {
+			onProgressUpdate(-2, 0);
+		} else if (result.equals("finished")) {
 			onProgressUpdate(-100, 0);
-    	}
+		}
     }
 
 

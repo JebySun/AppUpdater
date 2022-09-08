@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
-import android.util.Log;
-import android.util.Xml;
 
 import com.jebysun.updater.listener.UpdateListener;
 import com.jebysun.updater.model.UpdateModel;
@@ -17,17 +15,11 @@ import com.jebysun.updater.utils.AndroidUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 自动更新服务
@@ -47,11 +39,11 @@ public class UpdateService extends Service {
 		new CheckUpdateAsyncTask(this).execute(this.hostUpdateCheckUrl);
 		return new MsgBinder();
 	}
-	
+
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		if (fileDownlaodTask!=null) {
+		if (fileDownlaodTask != null) {
 			fileDownlaodTask.cancel(true);
 		}
 
@@ -92,8 +84,10 @@ public class UpdateService extends Service {
     	if(values[0] == -100) {
     		updateListener.onDownloadFinish();
     	} else if (values[0] == -1) {
-    		updateListener.onDownloadError("download error");
-        } else if (System.currentTimeMillis()-lastUpdateTime>100) {
+    		updateListener.onDownloadFailed("download error");
+        } else if(values[0] == -2) {
+			updateListener.onDownloadCanceled();
+		} else if (System.currentTimeMillis() - lastUpdateTime > 100) {
     		updateListener.onDownloading(values);
     		lastUpdateTime = System.currentTimeMillis();
     	}
