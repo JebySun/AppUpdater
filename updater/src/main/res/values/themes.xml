@@ -11,4 +11,21 @@
         <item name="android:windowFrame">@null</item>
     </style>
 
+    <style name="ActivityDialog" parent="Theme.AppCompat.Dialog">
+        <!-- 半透明 -->
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@color/white</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowCloseOnTouchOutside">false</item>
+        <!-- 背景模糊的透明度 数值越小越透明-->
+        <item name="android:backgroundDimAmount">0.5</item>
+        <!-- 浮现在Activity之上 -->
+        <item name="android:windowIsFloating">true</item>
+        <!-- 无标题 坑：就这个属性不能加'android:'前缀 -->
+        <item name="windowNoTitle">true</item>
+    </style>
+
+
+
 </resources>

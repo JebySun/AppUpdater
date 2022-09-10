@@ -46,7 +46,7 @@ public final class JavaUtil {
         if (string == null) {
             return true;
         }
-        return string.trim().length()==0;
+        return string.trim().length() == 0;
     }
 
 

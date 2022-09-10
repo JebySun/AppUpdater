@@ -3,14 +3,19 @@ package com.jebysun.updater.service;
 import android.app.Service;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
+import androidx.annotation.Nullable;
+
+import com.jebysun.updater.AppUpdater.*;
 import com.jebysun.updater.listener.UpdateListener;
 import com.jebysun.updater.model.UpdateModel;
 import com.jebysun.updater.task.CheckUpdateAsyncTask;
 import com.jebysun.updater.task.DownloadAsyncTask;
 import com.jebysun.updater.utils.AndroidUtil;
+import com.jebysun.updater.utils.JavaUtil;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,36 +27,70 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 自动更新服务
+ * 检查更新服务
  * @author JebySun
- *
+ * @date 2022/09/10
  */
 public class UpdateService extends Service {
-	private AsyncTask<String, Integer, String> fileDownlaodTask;
+
+	public static final String EXTRA_KEY_HOST_URL = "host_url";
+
+
+	private AsyncTask<String, Integer, String> downloadTask;
 	private UpdateListener updateListener;
 	private long lastUpdateTime;
 	private String hostUpdateCheckUrl;
-	
+
+	private LocalBroadcastReceiver broadcastReceiver;
+
+
+	@Nullable
 	@Override
 	public IBinder onBind(Intent intent) {
-		//启动检查更新异步任务
-		this.hostUpdateCheckUrl = intent.getStringExtra("update_check_url");
+		return null;
+	}
+
+	@Override
+	public boolean onUnbind(Intent intent) {
+		return super.onUnbind(intent);
+	}
+
+	@Override
+	public void onCreate() {
+		super.onCreate();
+	}
+
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+
+		broadcastReceiver = new LocalBroadcastReceiver(this);
+
+		this.hostUpdateCheckUrl = intent.getStringExtra(EXTRA_KEY_HOST_URL);
+		// 启动检查更新异步任务
 		new CheckUpdateAsyncTask(this).execute(this.hostUpdateCheckUrl);
-		return new MsgBinder();
+
+		return super.onStartCommand(intent, flags, startId);
 	}
 
 	@Override
 	public void onDestroy() {
-		super.onDestroy();
-		if (fileDownlaodTask != null) {
-			fileDownlaodTask.cancel(true);
+		if (downloadTask != null) {
+			downloadTask.cancel(true);
 		}
-
+		super.onDestroy();
 	}
-	
+
+
+
+
+	/**
+	 * 启动下载任务
+	 * @param fileUrl
+	 * @param downloadPath
+	 * @param downloadFileName
+	 */
 	public void startDownLoadTask(String fileUrl, String downloadPath, String downloadFileName) {
-		//启动下载任务
-		fileDownlaodTask = new DownloadAsyncTask(this).execute(fileUrl, downloadPath, downloadFileName);
+		downloadTask = new DownloadAsyncTask(this).execute(fileUrl, downloadPath, downloadFileName);
 	}
 	
     
@@ -61,19 +100,20 @@ public class UpdateService extends Service {
     public void setUpdateListener(UpdateListener updateListener) {  
     	this.updateListener = updateListener;
     }
-    
+
     public void checkUpdateResult(String hostVersionInfo) {
-		if (hostVersionInfo != null && hostVersionInfo.length() != 0 && !hostVersionInfo.equals("timeout")) {
-			UpdateModel appUpdateInfo = parseJson(hostVersionInfo);
-			if (AndroidUtil.getAppVersionCode(this) < appUpdateInfo.getVersionCode()) {
-				this.updateListener.onFoundNewVersion(appUpdateInfo);
-			} else {
-				this.updateListener.onNoFoundNewVersion();
-			}
-		} else {
+		if (JavaUtil.isEmptyString(hostVersionInfo) || hostVersionInfo.equals("timeout")) {
 			this.updateListener.onCheckError("check update error");
+			return;
 		}
 
+		UpdateModel appUpdateModel = parseJson(hostVersionInfo);
+		if (AndroidUtil.getAppVersionCode(this) < appUpdateModel.getVersionCode()) {
+			this.updateListener.onFoundNewVersion(appUpdateModel);
+			return;
+		}
+
+		this.updateListener.onNoFoundNewVersion();
     }
     
     /**
@@ -94,7 +134,7 @@ public class UpdateService extends Service {
     }
     
 
-	public UpdateModel parseJson(String jsonStr) {
+	private UpdateModel parseJson(String jsonStr) {
 		UpdateModel appInfo = new UpdateModel();
 		try {
 			JSONObject jsonObj = new JSONObject(jsonStr);
@@ -118,28 +158,8 @@ public class UpdateService extends Service {
 		return appInfo;
 	}
     
-    
-    
-    
-    
-    
-    
-	public class MsgBinder extends Binder{  
-        /** 
-         * 获取当前Service的实例 
-         * @return 
-         */  
-        public UpdateService getService(){  
-            return UpdateService.this;  
-        }  
-    }
-    
 
 }
-
-
-
-
 
 
 

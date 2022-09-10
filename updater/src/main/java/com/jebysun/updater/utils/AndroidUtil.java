@@ -262,6 +262,7 @@ public final class AndroidUtil {
             intent.setDataAndType(Uri.fromFile(apkFile), "application/vnd.android.package-archive");
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         }
+
         context.startActivity(intent);
     }
 

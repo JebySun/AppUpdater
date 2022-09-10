@@ -11,6 +11,9 @@
         android:supportsRtl="true"
         android:requestLegacyExternalStorage="true">
 
+        <activity android:name=".widget.CheckResultDialogActivity" android:theme="@style/ActivityDialog" />
+        <activity android:name=".widget.DownloadProgressDialogActivity" android:theme="@style/ActivityDialog" />
+
         <!-- App自更新服务 -->
         <service android:name="com.jebysun.updater.service.UpdateService" />
 
