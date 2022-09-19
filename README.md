@@ -9,7 +9,7 @@
 - 不依赖引用Activity的context, 使用Application的context，避免内存泄露。
 
 ## 二、效果截图
-<img src="https://gitee.com/jebysun/website/raw/master/github/screenshot_1.jpg" width="33%"/><img src="https://gitee.com/jebysun/website/raw/master/github/screenshot_2.jpg" width="33%"/><img src="https://gitee.com/jebysun/website/raw/master/github/screenshot_3.jpg" width="33%"/>
+<img src="https://gitee.com/jebysun/website/raw/master/github/screenshot_1.png" width="33%"/><img src="https://gitee.com/jebysun/website/raw/master/github/screenshot_2.png" width="33%"/><img src="https://gitee.com/jebysun/website/raw/master/github/screenshot_3.png" width="33%"/>
 
 ## 三、如何使用
 #### 1. 首先，添加jitpack仓库支持和gradle依赖：  
