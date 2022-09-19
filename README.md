@@ -9,14 +9,7 @@
 - 不依赖引用Activity的context, 使用Application的context，避免内存泄露。
 
 ## 二、效果截图
-<!-- This text will not appear in the browser window. 
-![演示效果图](other_files/screenshots/screenshot_1.jpg)
-![演示效果图](other_files/screenshots/screenshot_2.jpg)
-![演示效果图](other_files/screenshots/screenshot_3.jpg)
--->
-<img src="https://gitee.com/jebysun/website/raw/master/github/test.jpg" alt="提示有新版本" title="提示有新版本" width="33%"/>
-<img src="https://gitee.com/jebysun/website/raw/master/github/test.jpg" alt="弹出框显示下载进度" title="弹出框显示下载进度" width="33%"/>
-<img src="https://gitee.com/jebysun/website/raw/master/github/test.jpg" alt="后台下载，通知栏显示进度。" title="后台下载，通知栏显示进度。" width="33%"/>
+<img src="https://gitee.com/jebysun/website/raw/master/github/screenshot_1.jpg" width="33%"/><img src="https://gitee.com/jebysun/website/raw/master/github/screenshot_2.jpg" width="33%"/><img src="https://gitee.com/jebysun/website/raw/master/github/screenshot_3.jpg" width="33%"/>
 
 ## 三、如何使用
 #### 1. 首先，添加jitpack仓库支持和gradle依赖：  
