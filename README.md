@@ -26,7 +26,7 @@ allprojects {
 ```gradle
 dependencies {
 	...
-	implementation 'com.github.JebySun:AppUpdater:1.1.0'
+	implementation 'com.github.JebySun:AppUpdater:1.1.1'
 }
 ```
 #### 2. 然后，在Activity的onCreate方法中加入一句代码即可：
@@ -40,7 +40,7 @@ AppUpdater.with(this)
 {
 	"versionCode":10,
 	"versionName":"1.0.0",
-	"fileSize":"72.84MB",
+	"fileSize":"79.15MB",
 	"apkUrl":"http://www.lofter.com/rsc/android/lofter.apk",
 	"required":false,
 	"releaseDate":"2017-02-12 12:45:20",
