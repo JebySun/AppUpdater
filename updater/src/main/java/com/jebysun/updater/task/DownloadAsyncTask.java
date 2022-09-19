@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 
@@ -78,7 +79,6 @@ public class DownloadAsyncTask extends AsyncTask<String, Integer, String> {
 //            downloadUrl = "http://imtt.dd.qq.com/16891/D2233EF6C81785F5C12CC61CC4DC0566.apk?fsname=com.yueren.pyyx_2.1.8_20181.apk&csr=1bbd";
 //            downloadUrl = "https://gitee.com/zhiduopin/res/raw/master/ZhiDuoPin_release_majian.apk";
 
-
 			//先解码，是预防URL已经编码，两次解码是预防要下载的文件使用中文URL编码为文件名。
 			downloadUrl = URLDecoder.decode(downloadUrl, "utf-8");
 			downloadUrl = URLDecoder.decode(downloadUrl, "utf-8");
@@ -89,14 +89,15 @@ public class DownloadAsyncTask extends AsyncTask<String, Integer, String> {
 			URL url = new URL(downloadUrl);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setRequestMethod("GET");
-			conn.setRequestProperty("Accept-Encoding", "identity");
+			conn.setRequestProperty("Connection", "keep-alive");
+			conn.setRequestProperty("Accept-Encoding", "*");
 			conn.setRequestProperty("Accept-Charset", "UTF-8");
 			conn.setRequestProperty("ContentType", "UTF-8");
 			conn.setConnectTimeout(5000);
 			if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
 				int length = conn.getContentLength();
 				//无法获取文件大小时，默认为0。
-				length = (length == -1) ? 0 : length;
+				length = (length <= 0) ? 0 : length;
 				this.publishProgress(length, 0);
 				is = conn.getInputStream();
 				fos = new FileOutputStream(tempFile);

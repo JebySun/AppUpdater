@@ -59,61 +59,47 @@ public class DownloadProgressDialogActivity extends AppCompatActivity implements
         finish();
     }
 
-
+    public static void sendDismissBroadcast() {
+        Intent intent = new Intent(DownloadBroadcastReceiver.ACTION_BROADCAST_PROGRESS);
+        intent.putExtra("type", 4);
+        LocalBroadcastManager.getInstance(mBuilder.context).sendBroadcast(intent);
+    }
 
     //设置总文件大小
-    public void setMax(float max) {
+    public static void setMax(float max) {
 //        this.mTaskTotal = max;
 
         Intent intent = new Intent(DownloadBroadcastReceiver.ACTION_BROADCAST_PROGRESS);
         intent.putExtra("type", 1);
         intent.putExtra("max", max);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-
+        LocalBroadcastManager.getInstance(mBuilder.context).sendBroadcast(intent);
     }
 
     /**
      * 文字显示格式：已下载和需下载总大小
      * @param format
      */
-    public void setProgressNumberFormat(String format) {
+    public static void setProgressNumberFormat(String format) {
 //        this.mFormat = format;
 
         Intent intent = new Intent(DownloadBroadcastReceiver.ACTION_BROADCAST_PROGRESS);
         intent.putExtra("type", 2);
         intent.putExtra("format", format);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+        LocalBroadcastManager.getInstance(mBuilder.context).sendBroadcast(intent);
     }
 
     /**
      * 设置进度
      * @param progress
      */
-    public void sendProgressBroadcast(float progress) {
+    public static void sendProgressBroadcast(float progress) {
         Intent intent = new Intent(DownloadBroadcastReceiver.ACTION_BROADCAST_PROGRESS);
         intent.putExtra("type", 3);
         intent.putExtra("progress", progress);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+        LocalBroadcastManager.getInstance(mBuilder.context).sendBroadcast(intent);
     }
 
-    /**
-     * 设置进度
-     * @param progress
-     */
-    public void setProgress(float progress) {
-        if (this.mTaskTotal == 0F) {
-            indeterminateProgress(progress);
-            return;
-        }
 
-        this.mTaskFinished = progress;
-        //更新进度
-        mProgressBar.setProgress((int) (mProgressBar.getMax() * progress/mTaskTotal));
-        //更新完成百分数
-        mTvProgressPercent.setText((int)(100 * progress/mTaskTotal) + "%");
-        //更新已下载多少兆字节
-        mTvProgressMsg.setText(mFormat.replace("%1f", JavaUtil.formatFloat2String(mTaskFinished, 2)).replace("%2f", JavaUtil.formatFloat2String(mTaskTotal, 2)));
-    }
 
 
     @Override
@@ -188,6 +174,25 @@ public class DownloadProgressDialogActivity extends AppCompatActivity implements
 
         btnOK.setOnClickListener(this);
         btnCancel.setOnClickListener(this);
+    }
+
+    /**
+     * 设置进度
+     * @param progress
+     */
+    private void setProgress(float progress) {
+        if (this.mTaskTotal == 0F) {
+            indeterminateProgress(progress);
+            return;
+        }
+
+        this.mTaskFinished = progress;
+        //更新进度
+        mProgressBar.setProgress((int) (mProgressBar.getMax() * progress/mTaskTotal));
+        //更新完成百分数
+        mTvProgressPercent.setText((int)(100 * progress/mTaskTotal) + "%");
+        //更新已下载多少兆字节
+        mTvProgressMsg.setText(mFormat.replace("%1f", JavaUtil.formatFloat2String(mTaskFinished, 2)).replace("%2f", JavaUtil.formatFloat2String(mTaskTotal, 2)));
     }
 
     /**
@@ -295,6 +300,10 @@ public class DownloadProgressDialogActivity extends AppCompatActivity implements
             if (type == 3) {
                 float progress = intent.getFloatExtra("progress", 0F);
                 setProgress(progress);
+                return;
+            }
+            if (type == 4) {
+                dismiss();
                 return;
             }
         }

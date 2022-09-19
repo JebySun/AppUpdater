@@ -4,7 +4,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.IBinder;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -35,14 +34,12 @@ public class UpdateService extends Service {
 
 	public static final String EXTRA_KEY_HOST_URL = "host_url";
 
-
 	private AsyncTask<String, Integer, String> downloadTask;
 	private UpdateListener updateListener;
 	private long lastUpdateTime;
 	private String hostUpdateCheckUrl;
 
-	private LocalBroadcastReceiver broadcastReceiver;
-
+	private boolean serviceStarted;
 
 	@Nullable
 	@Override
@@ -56,24 +53,26 @@ public class UpdateService extends Service {
 	}
 
 	@Override
-	public void onCreate() {
-		super.onCreate();
-	}
-
-	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
+		// Service已在运行
+		if (this.serviceStarted) {
+			return super.onStartCommand(intent, flags, startId);
+		}
 
-		broadcastReceiver = new LocalBroadcastReceiver(this);
+		ServiceBridge.initUpdateService(this);
 
 		this.hostUpdateCheckUrl = intent.getStringExtra(EXTRA_KEY_HOST_URL);
 		// 启动检查更新异步任务
 		new CheckUpdateAsyncTask(this).execute(this.hostUpdateCheckUrl);
+
+		this.serviceStarted = true;
 
 		return super.onStartCommand(intent, flags, startId);
 	}
 
 	@Override
 	public void onDestroy() {
+		this.serviceStarted = false;
 		if (downloadTask != null) {
 			downloadTask.cancel(true);
 		}
@@ -91,6 +90,12 @@ public class UpdateService extends Service {
 	 */
 	public void startDownLoadTask(String fileUrl, String downloadPath, String downloadFileName) {
 		downloadTask = new DownloadAsyncTask(this).execute(fileUrl, downloadPath, downloadFileName);
+	}
+
+	public void cancelDownload() {
+		if (downloadTask != null) {
+			downloadTask.cancel(true);
+		}
 	}
 	
     

@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Environment;
+import android.util.Log;
 import android.view.Gravity;
 import android.widget.RemoteViews;
 import android.widget.Toast;
@@ -39,14 +40,13 @@ import java.util.List;
 public class AppUpdater {
 
 	public static final int DOWNLOAD_NOTIFY_ID = 1;
-	public static final String NOTIFICATION_CHANNEL_ID = "notification_channel_download";
+	public static final String NOTIFICATION_CHANNEL_ID = "updater_notification_channel_download";
 
 	private String hostUpdateCheckUrl;
 	private String downloadFileName;
 
 	private Context context;
 	private UpdateService updateService;
-	private DownloadProgressDialogActivity progressDialog;
 	private NotificationCompat.Builder notifyBuilder;
 	private RemoteViews customViews;
 
@@ -71,28 +71,22 @@ public class AppUpdater {
 	}
 
 	/**
-	 * 需要应用上下文参数，注意：传入的Context必须是Acitivity的实例。
+	 *
 	 * @param context
 	 * @return
      */
 	public static AppUpdater with(Context context) {
-			// TODO delete
-//					if (!(context instanceof Activity)) {
-//						throw new RuntimeException("Ensure parameter \"context\" is instance of Activity");
-//					}
-
 		if (!(context instanceof Application)) {
 			context = context.getApplicationContext();
 		}
-		AppUpdater instance = new AppUpdater(context);
-		return instance;
+		return new AppUpdater(context);
 	}
 
 	/**
 	 * 开始检查
 	 */
 	public void check() {
-		LocalBroadcastReceiver.setAppUpdater(this);
+		ServiceBridge.initAppUpdater(this);
 
 		Intent updateIntent = new Intent(context, UpdateService.class);
 		updateIntent.putExtra(UpdateService.EXTRA_KEY_HOST_URL, hostUpdateCheckUrl);
@@ -194,7 +188,7 @@ public class AppUpdater {
 	}
 
 	// TODO 计算逻辑移植到DownloadProgressDialogActivity内部
-	private DownloadProgressDialogActivity setProgressTxtFormat(DownloadProgressDialogActivity progressDialog, long pSize) {
+	private void setProgressTxtFormat(long pSize) {
 		float size = pSize;
 		String[] f = {"B", "KB", "MB", "GB"};
 		int formatCount = 0;
@@ -206,21 +200,11 @@ public class AppUpdater {
 		fCount = (float) Math.pow(1024, formatCount);
 		if (fileSize != 0) {
 			format = "%1f" + f[formatCount] + " / %2f" + f[formatCount];
-			progressDialog.setMax(size);
+			DownloadProgressDialogActivity.setMax(size);
 		} else {
 			format = "%1f" + f[formatCount] + " / 未知大小";
 		}
-		progressDialog.setProgressNumberFormat(format);
-		return progressDialog;
-	}
-
-	/**
-	 * 更新完成进度
-	 * @param progressDialog
-	 * @param progress - 当前已完成进度
-	 */
-	private void setProgressValue(DownloadProgressDialogActivity progressDialog, float progress) {
-		progressDialog.sendProgressBroadcast(progress);
+		DownloadProgressDialogActivity.setProgressNumberFormat(format);
 	}
 
 
@@ -237,7 +221,7 @@ public class AppUpdater {
 				if (values[1] == 0) {
 					//设置进度条对话框的最大值
 					fileSize = values[0];
-					progressDialog = setProgressTxtFormat(progressDialog, fileSize);
+					setProgressTxtFormat(fileSize);
 				} else if (downloadInBack) { //后台下载，只更新通知中的进度条
 					// 文件大小为0时
 					if (fileSize != 0) {
@@ -255,10 +239,10 @@ public class AppUpdater {
 				} else {
 					// 文件大小为0时
 					if (fileSize == 0) {
-						progressDialog = setProgressTxtFormat(progressDialog, values[1]);
+						setProgressTxtFormat(values[1]);
 					}
 					//设置进度条对话框进度
-					setProgressValue(progressDialog, values[1]/fCount);
+					DownloadProgressDialogActivity.sendProgressBroadcast(values[1]/fCount);
 				}
 			}
 
@@ -292,8 +276,7 @@ public class AppUpdater {
 
 			@Override
 			public void onDownloadFinish() {
-				// todo BUG:dismiss not work
-				progressDialog.dismiss();
+				DownloadProgressDialogActivity.sendDismissBroadcast();
 				notifyMgr.cancel(DOWNLOAD_NOTIFY_ID);
 				// 安装apk
 				AndroidUtil.installApk(context, downloadPath + File.separator + getDownloadFileName());
@@ -302,14 +285,15 @@ public class AppUpdater {
 
 			@Override
 			public void onDownloadCanceled() {
-				progressDialog.dismiss();
+				Log.e("=======", "onDownloadCanceled");
+				DownloadProgressDialogActivity.sendDismissBroadcast();
 				notifyMgr.cancel(DOWNLOAD_NOTIFY_ID);
 				release();
 			}
 
 			@Override
 			public void onDownloadFailed(String errorMsg) {
-				progressDialog.dismiss();
+				DownloadProgressDialogActivity.sendDismissBroadcast();
 				notifyMgr.cancel(DOWNLOAD_NOTIFY_ID);
 				AndroidUtil.toast(context, "下载失败，请重试！");
 				release();
@@ -375,14 +359,13 @@ public class AppUpdater {
 						break;
 					case DownloadProgressDialogActivity.BTN_CANCEL:
 						// 下载过程中取消下载
-						release();
+						updateService.cancelDownload();
 						break;
 				}
 			}
 		});
 		builder.setCancelable(false);
-		progressDialog = builder.build();
-		progressDialog.show();
+		builder.show();
 	}
 
 
@@ -394,7 +377,7 @@ public class AppUpdater {
 		// 高版本需要通知渠道
 		if(Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
 			// 只在Android O之上需要渠道
-			NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,"文件下载", NotificationManager.IMPORTANCE_LOW);
+			NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,"版本更新下载", NotificationManager.IMPORTANCE_LOW);
 			// 如果这里用IMPORTANCE_NOENE就需要在系统的设置里面开启渠道，通知才能正常弹出
 			notifyMgr.createNotificationChannel(notificationChannel);
 		}
@@ -423,22 +406,18 @@ public class AppUpdater {
 	}
 
 
-	//////////////////////////////innerclass//////////////////////////////////////
+	//////////////////////////////////////////////////////////////////
 
-	/**
-	 * 广播接收器，接受来自UpdateService发送的本地广播
-	 */
-	public static class LocalBroadcastReceiver {
+	public static class ServiceBridge {
 
 		private static AppUpdater appUpdater;
 
-		public static void setAppUpdater(AppUpdater appUpdater) {
-			LocalBroadcastReceiver.appUpdater = appUpdater;
+		public static void initAppUpdater(AppUpdater appUpdater) {
+			ServiceBridge.appUpdater = appUpdater;
 		}
 
-
-		public LocalBroadcastReceiver(UpdateService service) {
-			appUpdater.setUpdateService(service);
+		public static void initUpdateService(UpdateService service) {
+			ServiceBridge.appUpdater.setUpdateService(service);
 		}
 
 	}
