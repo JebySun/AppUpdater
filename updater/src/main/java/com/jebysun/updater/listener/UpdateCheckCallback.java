@@ -8,6 +8,6 @@ package com.jebysun.updater.listener;
 public interface UpdateCheckCallback {
 	
 	void onSuccess(boolean hasNew);
-	void onError(String msg);
+	void onFailure(String msg);
 
 }

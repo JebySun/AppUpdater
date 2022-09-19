@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Environment;
-import android.util.Log;
 import android.view.Gravity;
 import android.widget.RemoteViews;
 import android.widget.Toast;
@@ -179,12 +178,12 @@ public class AppUpdater {
 	 * 释放资源
 	 */
 	private void release() {
-		// TODO
 		this.updateService.stopSelf();
-//		updateService = null;
-//		notifyBuilder = null;
-//		customViews = null;
-//		context = null;
+		this.updateService = null;
+		this.notifyBuilder = null;
+		this.customViews = null;
+		this.updateCheckCallback = null;
+		ServiceBridge.appUpdater = null;
 	}
 
 	// TODO 计算逻辑移植到DownloadProgressDialogActivity内部
@@ -304,7 +303,7 @@ public class AppUpdater {
 			@Override
 			public void onCheckError(String errorMsg) {
 				if (updateCheckCallback != null) {
-					updateCheckCallback.onError(errorMsg);
+					updateCheckCallback.onFailure(errorMsg);
 				}
 				release();
 			}
