@@ -261,7 +261,7 @@ public class AppUpdater {
 				}
 				String updateDes = releaseNoteBuild.substring(0, releaseNoteBuild.length() - 1);
 
-				showCheckResultDialog(downloadUrl, updateDes);
+				showCheckResultDialog(downloadUrl, updateDes, appInfo.isRequired());
 
 			}
 
@@ -278,14 +278,16 @@ public class AppUpdater {
 			public void onDownloadFinish() {
 				DownloadProgressDialogActivity.sendDismissBroadcast();
 				notifyMgr.cancel(DOWNLOAD_NOTIFY_ID);
-				// 安装apk
-				AndroidUtil.installApk(context, downloadPath + File.separator + getDownloadFileName());
+				// 只有在运行在前台才安装
+				if (AndroidUtil.isAppForeground(context)) {
+					// 安装apk
+					AndroidUtil.installApk(context, downloadPath + File.separator + getDownloadFileName());
+				}
 				release();
 			}
 
 			@Override
 			public void onDownloadCanceled() {
-				Log.e("=======", "onDownloadCanceled");
 				DownloadProgressDialogActivity.sendDismissBroadcast();
 				notifyMgr.cancel(DOWNLOAD_NOTIFY_ID);
 				release();
@@ -315,13 +317,13 @@ public class AppUpdater {
 	 * @param downloadUrl
 	 * @param updateDes
 	 */
-	private void showCheckResultDialog(String downloadUrl, String updateDes) {
+	private void showCheckResultDialog(String downloadUrl, String updateDes, boolean required) {
 		CheckResultDialogActivity.Builder builder = new CheckResultDialogActivity.Builder(context);
 		builder.setTitle("检测到新版本");
 		builder.setContent(updateDes);
 		builder.setContentGravity(Gravity.LEFT);
+		builder.setNegativeButtonText("取消");
 		builder.setPositiveButtonText("立即更新");
-		builder.setNegativeButtonText("暂不更新");
 		builder.setOnButtonClickListener(new CheckResultDialogActivity.OnClickButtonListener() {
 			@Override
 			public void clicked(CheckResultDialogActivity dialog, int which) {
@@ -335,8 +337,14 @@ public class AppUpdater {
 						break;
 				}
 			}
+
+			@Override
+			public void onCanceled() {
+				release();
+			}
 		});
-		builder.setCanceledOnTouchOutside(false);
+		builder.setCancelable(!required);
+		builder.setCanceledOnTouchOutside(!required);
 		builder.show();
 	}
 
@@ -347,8 +355,8 @@ public class AppUpdater {
 		DownloadProgressDialogActivity.Builder builder = new DownloadProgressDialogActivity.Builder(context);
 		builder.setTitle("新版本下载");
 		builder.setMessage("正在下载新版本");
-		builder.setPositiveButtonText("后台下载");
 		builder.setNegativeButtonText("取消下载");
+		builder.setPositiveButtonText("后台下载");
 		builder.setOnButtonClickListener(new DownloadProgressDialogActivity.OnClickButtonListener() {
 			@Override
 			public void clicked(DownloadProgressDialogActivity dialog, int which) {
@@ -365,6 +373,7 @@ public class AppUpdater {
 			}
 		});
 		builder.setCancelable(false);
+		builder.setCanceledOnTouchOutside(false);
 		builder.show();
 	}
 

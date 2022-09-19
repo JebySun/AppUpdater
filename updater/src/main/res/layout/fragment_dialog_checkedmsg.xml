@@ -30,16 +30,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-        <Button android:id="@+id/btn_ok"
-            android:layout_below="@id/tv_msg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            style="?android:attr/borderlessButtonStyle"
-            android:background="@color/white"
-            android:textSize="16sp"
-            android:textColor="@color/black"
-            android:text="确定"/>
         <Button android:id="@+id/btn_cancel"
             android:layout_below="@id/tv_msg"
             android:layout_width="wrap_content"
@@ -50,6 +40,16 @@
             android:textSize="16sp"
             android:textColor="@color/gray"
             android:text="取消"/>
+        <Button android:id="@+id/btn_ok"
+            android:layout_below="@id/tv_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            style="?android:attr/borderlessButtonStyle"
+            android:background="@color/white"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:text="确定"/>
     </LinearLayout>
 
 

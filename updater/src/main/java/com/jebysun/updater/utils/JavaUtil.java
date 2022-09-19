@@ -38,7 +38,7 @@ public final class JavaUtil {
     }
 
     /**
-     * 判断字符串是否为null, "", "       "
+     * 判断字符串是否为null，或""，或"  "
      * @param string
      * @return
      */

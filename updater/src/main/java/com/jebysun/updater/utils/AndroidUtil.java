@@ -1,6 +1,7 @@
 package com.jebysun.updater.utils;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -20,6 +21,7 @@ import androidx.core.content.FileProvider;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.List;
 
 /**
  * Created by Administrator on 2016/11/2.
@@ -284,6 +286,17 @@ public final class AndroidUtil {
         return value;
     }
 
+    /**
+     * 判断app是否正在前台显示
+     * @param context
+     * @return
+     */
+    public static boolean isAppForeground(Context context) {
+        ActivityManager mActivityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> tasks = mActivityManager.getRunningTasks(1);
+        String packageName = tasks.get(0).topActivity.getPackageName();
+        return context.getPackageName().equals(packageName);
+    }
 
 
 }

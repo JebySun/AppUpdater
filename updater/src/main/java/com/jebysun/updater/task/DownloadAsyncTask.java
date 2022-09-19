@@ -1,7 +1,6 @@
 package com.jebysun.updater.task;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.jebysun.updater.service.UpdateService;
 
@@ -11,11 +10,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 
 public class DownloadAsyncTask extends AsyncTask<String, Integer, String> {
+
+	private static final String FINISHED = "download_finished";
+	private static final String CANCELED = "download_canceled";
+	private static final String ERROR = "download_error";
 
 	// 下载缓冲区大小(KB)
 	public static final int BUF_SIZE_KB = 32;
@@ -105,13 +107,13 @@ public class DownloadAsyncTask extends AsyncTask<String, Integer, String> {
 				int readLength = 0;
 				int finishedCount = 0;
 				while ((readLength = is.read(buffer)) != -1) {
+					fos.write(buffer, 0, readLength);
+					finishedCount += readLength;
+					this.publishProgress(length, finishedCount);
 					// 下载被取消
 					if (isCancelled()) {
 						break;
 					}
-					fos.write(buffer, 0, readLength);
-					finishedCount += readLength;
-					this.publishProgress(length, finishedCount);
 				}
 				fos.flush();
 				fos.close();
@@ -119,13 +121,13 @@ public class DownloadAsyncTask extends AsyncTask<String, Integer, String> {
 				// 下载被取消，删除未下载完成的文件
 				if (isCancelled()) {
 					if (tempFile.exists()) tempFile.delete();
-					return "canceled";
+					return CANCELED;
 				}
 				if (file.exists()) file.delete();
 				tempFile.renameTo(file);
-				return "finished";
+				return FINISHED;
 			} else {
-				return "error";
+				return ERROR;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -134,10 +136,10 @@ public class DownloadAsyncTask extends AsyncTask<String, Integer, String> {
 				if (is != null) is.close();
 			} catch (IOException ie) {
 				ie.printStackTrace();
-				return "error";
+				return ERROR;
 			}
 			if (tempFile.exists()) tempFile.delete();
-			return "error";
+			return ERROR;
 		}
 	}
 
@@ -151,24 +153,37 @@ public class DownloadAsyncTask extends AsyncTask<String, Integer, String> {
     	super.onProgressUpdate(values);
     	//更新Progress进度
     	this.service.updateProgress(values);
-    }  
+    }
 
-    
-    /**  
+	/**
+	 * 注意AsyncTask的坑
+	 * 1. task.cancel(true)方法仅仅是将AsyncTask的cancel标识符设置为true，仍然需要在doInBackground()中通过
+	 * 判断isCancelled()手动停止循环。
+	 * 2. 当调用cancel()后，在doInBackground() return后，将会调用onCancelled(Object)，而不再调用onPostExecute(Object)
+	 */
+	@Override
+	protected void onCancelled(String s) {
+		super.onCancelled(s);
+		if (CANCELED.equals(s)) onProgressUpdate(INT_CANCELED, 0);
+	}
+
+	/**
      * 这里的String参数对应AsyncTask中的第三个参数（也就是接收doInBackground的返回值）  
      * 在doInBackground方法执行结束之后在运行
      * 该方法运行在UI线程当中可以对UI空间进行设置  
      */
     @Override  
     protected void onPostExecute(String result) {
-    	if (result.equals("error")) {
-			onProgressUpdate(-1, 0);
-    	} else if (result.equals("canceled")) {
-			onProgressUpdate(-2, 0);
-		} else if (result.equals("finished")) {
-			onProgressUpdate(-100, 0);
+    	if (result.equals(ERROR)) {
+			onProgressUpdate(INT_ERROR, 0);
+		} else if (result.equals(FINISHED)) {
+			onProgressUpdate(INT_FINISHED, 0);
 		}
     }
+
+    public static final int INT_ERROR = -1;
+    public static final int INT_FINISHED = -100;
+    public static final int INT_CANCELED = -2;
 
 
 }

@@ -67,8 +67,6 @@ public class DownloadProgressDialogActivity extends AppCompatActivity implements
 
     //设置总文件大小
     public static void setMax(float max) {
-//        this.mTaskTotal = max;
-
         Intent intent = new Intent(DownloadBroadcastReceiver.ACTION_BROADCAST_PROGRESS);
         intent.putExtra("type", 1);
         intent.putExtra("max", max);
@@ -80,8 +78,6 @@ public class DownloadProgressDialogActivity extends AppCompatActivity implements
      * @param format
      */
     public static void setProgressNumberFormat(String format) {
-//        this.mFormat = format;
-
         Intent intent = new Intent(DownloadBroadcastReceiver.ACTION_BROADCAST_PROGRESS);
         intent.putExtra("type", 2);
         intent.putExtra("format", format);
@@ -154,6 +150,8 @@ public class DownloadProgressDialogActivity extends AppCompatActivity implements
         window.setGravity(Gravity.CENTER);
         window.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT);
         window.setBackgroundDrawableResource(R.drawable.drawable_dialog_bg);
+
+        setFinishOnTouchOutside(mBuilder.canceledOnTouchOutside);
     }
 
     private void initView() {

@@ -65,15 +65,6 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="8dp">
-        <Button android:id="@+id/btn_ok"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            style="?android:attr/borderlessButtonStyle"
-            android:background="@color/white"
-            android:textSize="16sp"
-            android:textColor="@color/black"
-            android:text="确定"/>
         <Button android:id="@+id/btn_cancel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -83,6 +74,15 @@
             android:textSize="16sp"
             android:textColor="@color/gray"
             android:text="取消"/>
+        <Button android:id="@+id/btn_ok"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            style="?android:attr/borderlessButtonStyle"
+            android:background="@color/white"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:text="确定"/>
     </LinearLayout>
 
 

@@ -17,7 +17,7 @@
         <item name="android:windowBackground">@color/white</item>
         <item name="android:backgroundDimEnabled">true</item>
         <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowCloseOnTouchOutside">false</item>
+<!--        <item name="android:windowCloseOnTouchOutside">false</item>-->
         <!-- 背景模糊的透明度 数值越小越透明-->
         <item name="android:backgroundDimAmount">0.5</item>
         <!-- 浮现在Activity之上 -->

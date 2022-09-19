@@ -108,7 +108,7 @@ public class UpdateService extends Service {
 
     public void checkUpdateResult(String hostVersionInfo) {
 		if (JavaUtil.isEmptyString(hostVersionInfo) || hostVersionInfo.equals("timeout")) {
-			this.updateListener.onCheckError("check update error");
+			this.updateListener.onCheckError("检查更新失败");
 			return;
 		}
 
@@ -126,11 +126,11 @@ public class UpdateService extends Service {
      * @param values
      */
     public void updateProgress(Integer... values) {
-    	if(values[0] == -100) {
+    	if(values[0] == DownloadAsyncTask.INT_FINISHED) {
     		updateListener.onDownloadFinish();
-    	} else if (values[0] == -1) {
-    		updateListener.onDownloadFailed("download error");
-        } else if(values[0] == -2) {
+    	} else if (values[0] == DownloadAsyncTask.INT_ERROR) {
+    		updateListener.onDownloadFailed("下载失败");
+        } else if(values[0] == DownloadAsyncTask.INT_CANCELED) {
 			updateListener.onDownloadCanceled();
 		} else if (System.currentTimeMillis() - lastUpdateTime > 100) {
     		updateListener.onDownloading(values);

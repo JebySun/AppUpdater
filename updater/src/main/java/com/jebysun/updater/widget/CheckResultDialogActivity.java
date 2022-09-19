@@ -10,6 +10,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -28,6 +29,9 @@ public class CheckResultDialogActivity extends AppCompatActivity implements View
 
     // TODO 用成员属性替换静态builder
     private static Builder mBuilder;
+    // 是否弹框内view互动事件导致的弹框消失
+    private boolean mCanceledWithEvent;
+
 
     // Activity必须保留无参构造
     public CheckResultDialogActivity() {}
@@ -65,7 +69,16 @@ public class CheckResultDialogActivity extends AppCompatActivity implements View
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mBuilder.clickListener != null && !mCanceledWithEvent) {
+            mBuilder.clickListener.onCanceled();
+        }
+    }
+
+    @Override
     public void onClick(View view) {
+        mCanceledWithEvent = true;
         int viewId = view.getId();
         if (viewId == R.id.btn_ok) {
             if (mBuilder.clickListener != null) {
@@ -85,6 +98,8 @@ public class CheckResultDialogActivity extends AppCompatActivity implements View
         window.setGravity(Gravity.CENTER);
         window.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT);
         window.setBackgroundDrawableResource(R.drawable.drawable_dialog_bg);
+
+        setFinishOnTouchOutside(mBuilder.canceledOnTouchOutside);
     }
 
     private void initView() {
@@ -191,6 +206,7 @@ public class CheckResultDialogActivity extends AppCompatActivity implements View
 
     public interface OnClickButtonListener {
         void clicked(CheckResultDialogActivity dialog, int which);
+        void onCanceled();
     }
 
 
