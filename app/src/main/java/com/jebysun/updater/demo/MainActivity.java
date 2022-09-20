@@ -96,6 +96,5 @@ public class MainActivity extends AppCompatActivity {
 
     public void toNextActivity(View view) {
         startActivity(new Intent(this, SecondActivity.class));
-        finish();
     }
 }

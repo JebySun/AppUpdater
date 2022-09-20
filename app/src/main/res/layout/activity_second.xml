@@ -11,6 +11,12 @@
         android:layout_height="wrap_content"
         android:text="下载在后台Service继续，完成后跳出安装界面。" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="退出"
+        android:onClick="onClickExitApp"/>
+
 
 
 </LinearLayout>

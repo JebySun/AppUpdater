@@ -107,7 +107,7 @@ public class UpdateService extends Service {
     }
 
     public void checkUpdateResult(String hostVersionInfo) {
-		if (JavaUtil.isEmptyString(hostVersionInfo) || hostVersionInfo.equals("timeout")) {
+		if (JavaUtil.isEmptyString(hostVersionInfo) || hostVersionInfo.equals("error")) {
 			this.updateListener.onCheckError("检查更新失败");
 			return;
 		}

@@ -158,7 +158,7 @@ public class AppUpdater {
 	 * Android 6.0以上检测文件写权限，然后下载
 	 * @param downloadUrl
 	 */
-	private void doDownload(String downloadUrl) {
+	private void doDownload(String downloadUrl, boolean required) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			int allowed = context.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 			if (allowed != PackageManager.PERMISSION_GRANTED) {
@@ -167,7 +167,7 @@ public class AppUpdater {
 			}
 		}
 
-		showFileDownloadDialog();
+		showFileDownloadDialog(required);
 
 		//调用服务的文件下载方法
 		updateService.startDownLoadTask(downloadUrl, this.downloadPath, this.downloadFileName);
@@ -323,13 +323,14 @@ public class AppUpdater {
 		builder.setContentGravity(Gravity.LEFT);
 		builder.setNegativeButtonText("取消");
 		builder.setPositiveButtonText("立即更新");
+		builder.setNegativeButtonGone(required);
 		builder.setOnButtonClickListener(new CheckResultDialogActivity.OnClickButtonListener() {
 			@Override
 			public void clicked(CheckResultDialogActivity dialog, int which) {
 				switch (which) {
 					case CheckResultDialogActivity.BTN_OK:
 						dialog.dismiss();
-						doDownload(downloadUrl);
+						doDownload(downloadUrl, required);
 						break;
 					case CheckResultDialogActivity.BTN_CANCEL:
 						release();
@@ -350,17 +351,19 @@ public class AppUpdater {
 	/**
 	 * 安装包下载进度弹框
 	 */
-	private void showFileDownloadDialog() {
+	private void showFileDownloadDialog(boolean required) {
 		DownloadProgressDialogActivity.Builder builder = new DownloadProgressDialogActivity.Builder(context);
 		builder.setTitle("新版本下载");
 		builder.setMessage("正在下载新版本");
 		builder.setNegativeButtonText("取消下载");
 		builder.setPositiveButtonText("后台下载");
+		builder.setNegativeButtonGone(required);
 		builder.setOnButtonClickListener(new DownloadProgressDialogActivity.OnClickButtonListener() {
 			@Override
 			public void clicked(DownloadProgressDialogActivity dialog, int which) {
 				switch (which) {
 					case DownloadProgressDialogActivity.BTN_OK:
+						Toast.makeText(context, "后台继续下载中", Toast.LENGTH_SHORT).show();
 						dialog.dismiss();
 						downloadInNotification();
 						break;
@@ -371,8 +374,8 @@ public class AppUpdater {
 				}
 			}
 		});
-		builder.setCancelable(false);
-		builder.setCanceledOnTouchOutside(false);
+		builder.setCancelable(!required);
+		builder.setCanceledOnTouchOutside(!required);
 		builder.show();
 	}
 

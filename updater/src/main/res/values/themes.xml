@@ -12,6 +12,8 @@
     </style>
 
     <style name="ActivityDialog" parent="Theme.AppCompat.Dialog">
+        <!-- 无标题 坑：就这个属性不能加android前缀 -->
+        <item name="windowNoTitle">true</item>
         <!-- 半透明 -->
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@color/white</item>
@@ -22,10 +24,17 @@
         <item name="android:backgroundDimAmount">0.5</item>
         <!-- 浮现在Activity之上 -->
         <item name="android:windowIsFloating">true</item>
-        <!-- 无标题 坑：就这个属性不能加'android:'前缀 -->
-        <item name="windowNoTitle">true</item>
+        <item name="android:windowAnimationStyle">@style/activityAnim</item>
     </style>
 
+
+    <!-- 使用style方式定义activity切换动画 -->
+    <style name="activityAnim">
+        <item name="android:activityOpenEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:activityOpenExitAnimation">@android:anim/fade_out</item>
+        <item name="android:activityCloseEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:activityCloseExitAnimation">@android:anim/fade_out</item>
+    </style>
 
 
 </resources>

@@ -1,7 +1,6 @@
 package com.jebysun.updater.task;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.jebysun.updater.service.UpdateService;
 
@@ -36,9 +35,8 @@ public class CheckUpdateAsyncTask extends AsyncTask<String, Integer, String> {
 		String dataStr = null;
 		try {
 			dataStr = httpGetRequest(params[0]);
-			Log.e("CheckUpdateAsyncTask", dataStr);
-		} catch (IOException e) {
-			return "timeout";
+		} catch (Exception e) {
+			return "error";
 		}
 		return dataStr;
 	}
@@ -70,7 +68,7 @@ public class CheckUpdateAsyncTask extends AsyncTask<String, Integer, String> {
 	 * @return json
 	 * @throws IOException
 	 */
-	public String httpGetRequest(String urlStr) throws IOException {
+	public String httpGetRequest(String urlStr) {
 		String result = "";
 		try {
 			URL url = new URL(urlStr);

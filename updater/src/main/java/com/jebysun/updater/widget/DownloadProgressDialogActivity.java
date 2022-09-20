@@ -102,7 +102,7 @@ public class DownloadProgressDialogActivity extends AppCompatActivity implements
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.fragment_dialog_progress);
+        setContentView(R.layout.activity_dialog_progress);
 
         this.resizeDialog();
         this.initView();
@@ -166,9 +166,11 @@ public class DownloadProgressDialogActivity extends AppCompatActivity implements
 
         tvTitle.setText(mBuilder.title != null ? mBuilder.title : tvTitle.getText());
         tvMessage.setText(mBuilder.message != null ? mBuilder.message : tvMessage.getText());
+        mProgressBar.setMax(100);
         btnOK.setText(mBuilder.strBtnOK != null ? mBuilder.strBtnOK : btnOK.getText());
         btnCancel.setText(mBuilder.strBtnCancel != null ? mBuilder.strBtnCancel : btnCancel.getText());
-        mProgressBar.setMax(100);
+
+        btnCancel.setVisibility(mBuilder.negativeButtonGone ? View.GONE : View.VISIBLE);
 
         btnOK.setOnClickListener(this);
         btnCancel.setOnClickListener(this);
@@ -222,6 +224,7 @@ public class DownloadProgressDialogActivity extends AppCompatActivity implements
         private String strBtnCancel;
         private boolean cancelable = true;
         private boolean canceledOnTouchOutside = true;
+        private boolean negativeButtonGone;
 
         private OnClickButtonListener clickListener;
 
@@ -271,6 +274,9 @@ public class DownloadProgressDialogActivity extends AppCompatActivity implements
         public Builder setCanceledOnTouchOutside(boolean b) {
             this.canceledOnTouchOutside = b;
             return this;
+        }
+        public void setNegativeButtonGone(boolean required) {
+            this.negativeButtonGone = required;
         }
     }
 

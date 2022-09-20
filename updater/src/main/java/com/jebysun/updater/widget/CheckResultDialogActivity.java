@@ -10,7 +10,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -55,7 +54,7 @@ public class CheckResultDialogActivity extends AppCompatActivity implements View
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.fragment_dialog_checkedmsg);
+        setContentView(R.layout.activity_dialog_checkedmsg);
 
         this.resizeDialog();
         this.initView();
@@ -124,6 +123,7 @@ public class CheckResultDialogActivity extends AppCompatActivity implements View
 
         btnOK.setText(mBuilder.strBtnOK != null ? mBuilder.strBtnOK : btnOK.getText());
         btnCancel.setText(mBuilder.strBtnCancel != null ? mBuilder.strBtnCancel : btnCancel.getText());
+        btnCancel.setVisibility(mBuilder.negativeButtonGone ? View.GONE : View.VISIBLE);
 
         btnOK.setOnClickListener(this);
         btnCancel.setOnClickListener(this);
@@ -145,6 +145,7 @@ public class CheckResultDialogActivity extends AppCompatActivity implements View
         private boolean canceledOnTouchOutside = true;
 
         private OnClickButtonListener clickListener;
+        private boolean negativeButtonGone;
 
 
         public Builder(Context context) {
@@ -198,6 +199,10 @@ public class CheckResultDialogActivity extends AppCompatActivity implements View
         public Builder setCanceledOnTouchOutside(boolean b) {
             this.canceledOnTouchOutside = b;
             return this;
+        }
+
+        public void setNegativeButtonGone(boolean required) {
+            this.negativeButtonGone = required;
         }
     }
 

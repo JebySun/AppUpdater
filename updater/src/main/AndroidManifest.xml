@@ -17,7 +17,6 @@
         <!-- App自更新服务 -->
         <service android:name="com.jebysun.updater.service.UpdateService" />
 
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

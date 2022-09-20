@@ -26,10 +26,10 @@ allprojects {
 ```gradle
 dependencies {
 	...
-	implementation 'com.github.JebySun:AppUpdater:1.1.1'
+	implementation 'com.github.JebySun:AppUpdater:1.1.2'
 }
 ```
-#### 2. 然后，在Activity的onCreate方法中加入一句代码即可：
+#### 2. 然后，在Activity或者Application中加入一句代码即可：
 ```java
 AppUpdater.with(this)
 	.setHostUpdateCheckUrl("https://gitee.com/jebysun/website/raw/master/github/app_latest_version.json")
@@ -55,7 +55,7 @@ AppUpdater.with(this)
 |	versionName		|	string	|	最新版本名称		|			|
 |	fileSize		|	string	|	apk文件大小	    |			|
 |	apkUrl		    |	string	|	apk下载地址		|			|
-|	required		|	boolean	|	是否必须更新		|	如果需要强制客户端升级，设为true		|
+|	required		|	boolean	|	是否必须更新		|	如果需要强制客户端升级，设为true，弹框则无法取消		|
 |	releaseDate		|	string	|	发布日期			|			|
 |	releaseNotes	|	array	|	更新描述			|	更新描述的字符串数组		|
 
