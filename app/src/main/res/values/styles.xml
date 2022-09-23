@@ -2,6 +2,6 @@
 
     <!-- Base application theme. -->
 
-    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.DarkActionBar"></style>
+    <style name="AppTheme" parent="Theme.AppCompat.Light"></style>
 
 </resources>

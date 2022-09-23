@@ -1,16 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="UpdaterDialog" parent="Theme.AppCompat.Light.Dialog">
-        <!-- 背景颜色及透明程度 -->
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <!-- 无标题 -->
-        <item name="android:windowNoTitle">true</item>
-        <!-- 是否模糊 -->
-        <item name="android:backgroundDimEnabled">true</item>
-        <item name="android:windowFrame">@null</item>
-    </style>
-
     <style name="ActivityDialog" parent="Theme.AppCompat.Dialog">
         <!-- 无标题 坑：就这个属性不能加android前缀 -->
         <item name="windowNoTitle">true</item>
